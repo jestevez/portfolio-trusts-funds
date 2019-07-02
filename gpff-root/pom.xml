@@ -6,21 +6,142 @@
     <artifactId>gpff-root</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <modules>
         <module>../gpff-commons</module>
-  		<module>../gpff-dao</module>
-		<module>../gpff-web</module>
+        <module>../gpff-dao</module>
+        <module>../gpff-web</module>
     </modules>
+
     <properties>
+		<javaSourceCompatibility>1.7</javaSourceCompatibility>
+        <javaTargetCompatibility>1.7</javaTargetCompatibility>
+		<!-- Optional : default value was cp1252 -->
+        <sourceEncoding>UTF-8</sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java-version>1.7</java-version>
+
+        <jt400.version>6.1.0.6</jt400.version>
+        <hibernate.version>4.1.4.Final</hibernate.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <logback.version>1.0.13</logback.version>
+        <org.springframework-version>4.0.5.RELEASE</org.springframework-version>
+        <spring.security.version>3.2.4.RELEASE</spring.security.version>
+        <org.aspectj-version>1.6.9</org.aspectj-version>
     </properties>
+
     <dependencies>
 		<dependency>
             <groupId>com.ibm</groupId>
             <artifactId>jt400</artifactId>
-            <version>6.1.0.6</version>
-<!--  mvn install:install-file -Dfile=./lib/jt400.jar -DgroupId=com.ibm.as400 -DartifactId=jt400 -Dversion=6.1.0.6 -Dpackaging=jar -->
+            <version>${jt400.version}</version>
+            <!--  mvn install:install-file -Dfile=./lib/jt400.jar -DgroupId=com.ibm.as400 -DartifactId=jt400 -Dversion=6.1.0.6 -Dpackaging=jar -->
 <!-- 			<scope>system</scope> -->
-<!--             <systemPath>${project.basedir}/lib/jt400.jar</systemPath> -->
+<!--            <systemPath>${project.basedir}/lib/jt400.jar</systemPath> -->
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- ********************* SPRING DEPENDENCIES ********************* -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-oxm</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc-portlet</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <!-- SPRING SECURITY -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring.security.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring.security.version}</version>
         </dependency>
     </dependencies>
 </project>
