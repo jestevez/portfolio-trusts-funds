@@ -25,8 +25,13 @@ package ve.com.sios.gpff.common;
  * @date 25/01/2013
  */
 public final class AccountsUtilities {
+
+    /** The Constant ELEVEN_MODULE. */
     private static final int ELEVEN_MODULE = 11;
 
+    /**
+     * Instantiates a new accounts utilities.
+     */
     private AccountsUtilities() {
         super();
     }
