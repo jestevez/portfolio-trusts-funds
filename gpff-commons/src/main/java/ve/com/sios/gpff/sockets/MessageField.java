@@ -6,13 +6,13 @@ package ve.com.sios.gpff.sockets;
 public abstract class MessageField {
 
     /** The bytes. */
-    private byte[] bytes;
+    protected byte[] bytes;
 
     /** The start. */
-    private int start;
+    protected int start;
 
     /** The length. */
-    private int length;
+    protected int length;
 
     /** The stringvalue. */
     private String stringvalue = null;
