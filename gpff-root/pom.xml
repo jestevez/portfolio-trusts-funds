@@ -8,6 +8,7 @@
     <packaging>pom</packaging>
 
     <modules>
+    	<module>../gpff-sql</module>
         <module>../gpff-commons</module>
         <module>../gpff-dao</module>
         <module>../gpff-web</module>
@@ -36,8 +37,8 @@
             <artifactId>jt400</artifactId>
             <version>${jt400.version}</version>
             <!--  mvn install:install-file -Dfile=./lib/jt400.jar -DgroupId=com.ibm.as400 -DartifactId=jt400 -Dversion=6.1.0.6 -Dpackaging=jar -->
-<!-- 			<scope>system</scope> -->
-<!--            <systemPath>${project.basedir}/lib/jt400.jar</systemPath> -->
+			<scope>system</scope>
+           <systemPath>${project.basedir}/lib/jt400.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
