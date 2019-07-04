@@ -1,0 +1,57 @@
+
+-- DROP PROCEDURE GPSQLWEB.procUpdateAa2cab
+    
+CREATE PROCEDURE GPSQLWEB.procUpdateAa2cab
+(
+     IN P_AREA varchar(4),
+    IN P_NAREA varchar(60),
+    IN P_USUARIO varchar(10),
+    IN P_PANTALLA varchar(10),
+    IN P_FECHA BIGINT,
+    IN P_LITERAL1 varchar(60),
+    IN P_LITERAL2 varchar(60),
+    IN P_NCTA varchar(20),
+    IN P_NCTAC varchar(20),
+    IN P_NCTACU varchar(20),
+    IN P_NCTCHE varchar(20),
+    IN P_NCTCHA varchar(20),
+    IN P_NCTBCV varchar(20),
+    IN P_NCTAFL varchar(20),
+    IN P_NCTAIS varchar(20),
+    IN P_NCTGAO varchar(20),
+    IN P_NCTRIV varchar(20),
+
+    IN P_USERNAME VARCHAR(50),
+    IN P_IPADDRESS VARCHAR(255),
+    IN P_USERAGENT VARCHAR(500),
+    OUT P_MSGCODE INTEGER
+)
+LANGUAGE SQL
+BEGIN
+  Declare StringSQL Varchar(32000) Default '';
+  Declare V_CANT INT DEFAULT 0;
+  
+  SELECT COUNT(1) INTO V_CANT FROM GPDATWEB.AA2CAB WHERE AREA= P_AREA ;
+
+  IF V_CANT > 1 THEN
+	SET P_MSGCODE = 9001;
+        SET StringSQL = '9001 - HAY MAS DE UN REGISTRO CON LA CLAVE PRIMARIA';
+        CALL GPSQLWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Actualizar', 'procUpdateAa2cab', StringSQL);
+        RETURN;
+  END IF;
+
+  IF V_CANT = 0 THEN
+	SET P_MSGCODE = 9000;
+        SET StringSQL = '9000 - NO HAY REGISTROS QUE MODIFICAR CODIGO';
+        CALL GPSQLWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Actualizar', 'procUpdateAa2cab', StringSQL);
+        RETURN;
+  END IF;
+
+  UPDATE GPDATWEB.AA2CAB SET NAREA= P_NAREA , USUARIO= P_USUARIO , PANTALLA= P_PANTALLA , FECHA= P_FECHA , LITERAL1= P_LITERAL1 , LITERAL2= P_LITERAL2 , NCTA= P_NCTA , NCTAC= P_NCTAC , NCTACU= P_NCTACU , NCTCHE= P_NCTCHE , NCTCHA= P_NCTCHA , NCTBCV= P_NCTBCV , NCTAFL= P_NCTAFL , NCTAIS= P_NCTAIS , NCTGAO= P_NCTGAO , NCTRIV= P_NCTRIV  WHERE AREA= P_AREA ;
+  SET P_MSGCODE = 0;    
+  Set StringSQL = 'UPDATE GPDATWEB.AA2CAB SET NAREA= '''||P_NAREA || ''' , USUARIO= '''||P_USUARIO || ''' , PANTALLA= '''||P_PANTALLA || ''' , FECHA= '''||P_FECHA || ''' , LITERAL1= '''||P_LITERAL1 || ''' , LITERAL2= '''||P_LITERAL2 || ''' , NCTA= '''||P_NCTA || ''' , NCTAC= '''||P_NCTAC || ''' , NCTACU= '''||P_NCTACU || ''' , NCTCHE= '''||P_NCTCHE || ''' , NCTCHA= '''||P_NCTCHA || ''' , NCTBCV= '''||P_NCTBCV || ''' , NCTAFL= '''||P_NCTAFL || ''' , NCTAIS= '''||P_NCTAIS || ''' , NCTGAO= '''||P_NCTGAO || ''' , NCTRIV= '''||P_NCTRIV || '''  WHERE AREA= '''||P_AREA|| ''' ;';
+  CALL GPSQLWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Actualizar', 'procUpdateAa2cab', StringSQL);
+END
+GO
+
+

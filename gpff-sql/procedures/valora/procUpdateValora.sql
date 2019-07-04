@@ -1,0 +1,83 @@
+
+-- DROP PROCEDURE GPSQLWEB.procUpdateValora
+    
+CREATE PROCEDURE GPSQLWEB.procUpdateValora
+(
+     IN P_VLOEMP VARCHAR(2),
+            IN P_VLODEL VARCHAR(2),
+            IN P_VLOCOA VARCHAR(12),
+            IN P_VLOCON BIGINT(20),
+            IN P_VLONOM VARCHAR(40),
+            IN P_VLOUNI DOUBLE,
+            IN P_VLOLIQ VARCHAR(1),
+            IN P_VLODIV INTEGER,
+            IN P_VLOCLS VARCHAR(1),
+            IN P_VLOISI VARCHAR(12),
+            IN P_VLOCAT VARCHAR(5),
+            IN P_VLOCBE BIGINT(20),
+            IN P_VLOFIS BIGINT(20),
+            IN P_VLOIIN BIGINT(20),
+            IN P_VLONMI INTEGER,
+            IN P_VLOFIN BIGINT(20),
+            IN P_VLOPIN DOUBLE,
+            IN P_VLOIAM BIGINT(20),
+            IN P_VLONMA INTEGER,
+            IN P_VLOFAM BIGINT(20),
+            IN P_VLOPAM DOUBLE,
+            IN P_VLOTAM VARCHAR(1),
+            IN P_VLOMAM VARCHAR(1),
+            IN P_VLOUDE BIGINT(20),
+            IN P_VLOUCA BIGINT(20),
+            IN P_VLOOUC BIGINT(20),
+            IN P_VLOBEL VARCHAR(1),
+            IN P_VLOFUI BIGINT(20),
+            IN P_VLOFUA BIGINT(20),
+            IN P_VLOFON DOUBLE,
+            IN P_VLOSE1 DOUBLE,
+            IN P_VLOSE2 BIGINT(20),
+            IN P_VLOCME BIGINT(20),
+            IN P_VLOFAC DOUBLE,
+            IN P_VLOGAR DOUBLE,
+            IN P_VLOGAD DOUBLE,
+            IN P_VLOCBR DOUBLE,
+            IN P_VLOTUN VARCHAR(20),
+            IN P_VLOHOR VARCHAR(20),
+            IN P_VLOTIP VARCHAR(5),
+            IN P_VLOSPR DOUBLE,
+            IN P_VLOTFO INTEGER,
+            IN P_VLOTAS DOUBLE,
+           
+    IN P_USERNAME VARCHAR(50),
+    IN P_IPADDRESS VARCHAR(255),
+    IN P_USERAGENT VARCHAR(500),
+    OUT P_MSGCODE INTEGER
+)
+LANGUAGE SQL
+BEGIN
+  Declare StringSQL Varchar(32000) Default '';
+  Declare V_CANT INT DEFAULT 0;
+  
+  SELECT COUNT(1) INTO V_CANT FROM GPDATWEB.VALORA WHERE VLOCON = P_VLOCON;
+
+  IF V_CANT > 1 THEN
+	SET P_MSGCODE = 9001;
+        SET StringSQL = '9001 - HAY MAS DE UN REGISTRO CON LA CLAVE PRIMARIA';
+        CALL GPSQLWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Actualizar', 'procUpdateValora', StringSQL);
+        RETURN;
+  END IF;
+
+  IF V_CANT = 0 THEN
+	SET P_MSGCODE = 9000;
+        SET StringSQL = '9000 - NO HAY REGISTROS QUE MODIFICAR CODIGO';
+        CALL GPSQLWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Actualizar', 'procUpdateValora', StringSQL);
+        RETURN;
+  END IF;
+
+  UPDATE GPDATWEB.VALORA SET VLOEMP= P_VLOEMP , VLODEL= P_VLODEL , VLOCOA= P_VLOCOA , VLONOM= P_VLONOM , VLOUNI= P_VLOUNI , VLOLIQ= P_VLOLIQ , VLODIV= P_VLODIV , VLOCLS= P_VLOCLS , VLOISI= P_VLOISI , VLOCAT= P_VLOCAT , VLOCBE= P_VLOCBE , VLOFIS= P_VLOFIS , VLOIIN= P_VLOIIN , VLONMI= P_VLONMI , VLOFIN= P_VLOFIN , VLOPIN= P_VLOPIN , VLOIAM= P_VLOIAM , VLONMA= P_VLONMA , VLOFAM= P_VLOFAM , VLOPAM= P_VLOPAM , VLOTAM= P_VLOTAM , VLOMAM= P_VLOMAM , VLOUDE= P_VLOUDE , VLOUCA= P_VLOUCA , VLOOUC= P_VLOOUC , VLOBEL= P_VLOBEL , VLOFUI= P_VLOFUI , VLOFUA= P_VLOFUA , VLOFON= P_VLOFON , VLOSE1= P_VLOSE1 , VLOSE2= P_VLOSE2 , VLOCME= P_VLOCME , VLOFAC= P_VLOFAC , VLOGAR= P_VLOGAR , VLOGAD= P_VLOGAD , VLOCBR= P_VLOCBR , VLOTUN= P_VLOTUN , VLOHOR= P_VLOHOR , VLOTIP= P_VLOTIP , VLOSPR= P_VLOSPR , VLOTFO= P_VLOTFO , VLOTAS= P_VLOTAS  WHERE VLOCON= P_VLOCON ;
+  SET P_MSGCODE = 0;    
+  Set StringSQL = 'UPDATE GPDATWEB.VALORA SET VLOEMP= '''||P_VLOEMP || ''' , VLODEL= '''||P_VLODEL || ''' , VLOCOA= '''||P_VLOCOA || ''' , VLONOM= '''||P_VLONOM || ''' , VLOUNI= '''||P_VLOUNI || ''' , VLOLIQ= '''||P_VLOLIQ || ''' , VLODIV= '''||P_VLODIV || ''' , VLOCLS= '''||P_VLOCLS || ''' , VLOISI= '''||P_VLOISI || ''' , VLOCAT= '''||P_VLOCAT || ''' , VLOCBE= '''||P_VLOCBE || ''' , VLOFIS= '''||P_VLOFIS || ''' , VLOIIN= '''||P_VLOIIN || ''' , VLONMI= '''||P_VLONMI || ''' , VLOFIN= '''||P_VLOFIN || ''' , VLOPIN= '''||P_VLOPIN || ''' , VLOIAM= '''||P_VLOIAM || ''' , VLONMA= '''||P_VLONMA || ''' , VLOFAM= '''||P_VLOFAM || ''' , VLOPAM= '''||P_VLOPAM || ''' , VLOTAM= '''||P_VLOTAM || ''' , VLOMAM= '''||P_VLOMAM || ''' , VLOUDE= '''||P_VLOUDE || ''' , VLOUCA= '''||P_VLOUCA || ''' , VLOOUC= '''||P_VLOOUC || ''' , VLOBEL= '''||P_VLOBEL || ''' , VLOFUI= '''||P_VLOFUI || ''' , VLOFUA= '''||P_VLOFUA || ''' , VLOFON= '''||P_VLOFON || ''' , VLOSE1= '''||P_VLOSE1 || ''' , VLOSE2= '''||P_VLOSE2 || ''' , VLOCME= '''||P_VLOCME || ''' , VLOFAC= '''||P_VLOFAC || ''' , VLOGAR= '''||P_VLOGAR || ''' , VLOGAD= '''||P_VLOGAD || ''' , VLOCBR= '''||P_VLOCBR || ''' , VLOTUN= '''||P_VLOTUN || ''' , VLOHOR= '''||P_VLOHOR || ''' , VLOTIP= '''||P_VLOTIP || ''' , VLOSPR= '''||P_VLOSPR || ''' , VLOTFO= '''||P_VLOTFO || ''' , VLOTAS= '''||P_VLOTAS || '''  WHERE VLOCON= '''||P_VLOCON|| ''' ;';
+  CALL GPSQLWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Actualizar', 'procUpdateValora', StringSQL);
+END
+GO
+
+

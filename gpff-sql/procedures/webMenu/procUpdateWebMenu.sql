@@ -1,0 +1,29 @@
+
+-- DROP PROCEDURE GPPGMWEB.procUpdateWebMenu
+    
+CREATE PROCEDURE GPPGMWEB.procUpdateWebMenu
+(
+     IN P_ID INTEGER,
+            IN P_NAME VARCHAR(50),
+            IN P_URL VARCHAR(100),
+            IN P_PGM VARCHAR(50),
+            IN P_PARENTID INTEGER,
+            IN P_ORDERS INTEGER,
+            IN P_STATUSID INTEGER,
+            IN P_ISMENU INTEGER,
+           
+    IN P_USERNAME VARCHAR(50),
+    IN P_IPADDRESS VARCHAR(255),
+    IN P_USERAGENT VARCHAR(500)
+)
+LANGUAGE SQL
+BEGIN
+  Declare StringSQL Varchar(32000) Not Null Default '';
+  UPDATE GPPGMWEB.WEBMENU SET NAME= P_NAME , URL= P_URL , PGM= P_PGM , PARENTID= P_PARENTID , ORDERS= P_ORDERS , STATUSID= P_STATUSID , ISMENU= P_ISMENU  WHERE ID= P_ID ;
+
+  Set StringSQL = 'UPDATE GPPGMWEB.WEBMENU SET NAME= '''||P_NAME || ''' , URL= '''||P_URL || ''' , PGM= '''||P_PGM || ''' , PARENTID= '''||P_PARENTID || ''' , ORDERS= '''||P_ORDERS || ''' , STATUSID= '''||P_STATUSID || ''' , ISMENU= '''||P_ISMENU || '''  WHERE ID= '''||P_ID|| ''' ;';
+  CALL GPPGMWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Actualizar', 'procUpdateWebMenu', StringSQL);
+END
+GO
+
+

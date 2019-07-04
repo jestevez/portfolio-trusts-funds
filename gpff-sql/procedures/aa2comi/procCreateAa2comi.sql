@@ -1,0 +1,60 @@
+
+    
+--DROP PROCEDURE GPSQLWEB.procCreateAa2comi
+    
+CREATE PROCEDURE GPSQLWEB.procCreateAa2comi
+(
+    IN P_COMEMP VARCHAR(2),
+    IN P_COMDEL VARCHAR(2),
+    IN P_COMFIC DECIMAL(8 , 0),
+    IN P_COMCOB DECIMAL(9 , 6),
+    IN P_COMNCO DECIMAL(9 , 6),
+    IN P_COMVIV DECIMAL(9 , 6),
+    IN P_COMCPJ DECIMAL(9 , 6),
+    IN P_COMCFL DECIMAL(9 , 6),
+    IN P_COMINP DECIMAL(9 , 6),
+    IN P_COMMOP DECIMAL(9 , 6),
+    IN P_COMSCF DECIMAL(9 , 6),
+    IN P_COMDIS VARCHAR(12),
+    IN P_COMINV VARCHAR(12),
+    IN P_COMFEC DECIMAL(8 , 0),
+    IN P_COMUSU VARCHAR(10),
+    IN P_COMHOR DECIMAL(6 , 0),
+    IN P_USERNAME VARCHAR(50),
+    IN P_IPADDRESS VARCHAR(255),
+    IN P_USERAGENT VARCHAR(500),
+    OUT P_MSGCODE INTEGER
+)
+LANGUAGE SQL
+BEGIN
+  Declare StringSQL Varchar(32000) Default '';
+  DECLARE V_FECGRA DECIMAL(8, 0);
+  DECLARE V_HORA DECIMAL(6, 0) DEFAULT 1;
+  Declare V_CANT INT DEFAULT 0;
+  SET P_MSGCODE = 9999;
+  
+  
+  SELECT COUNT(1) INTO V_CANT FROM GPDATWEB.AA2COMI WHERE COMEMP =  P_COMEMP AND COMDEL = P_COMDEL;
+
+  IF V_CANT > 0 THEN
+	SET P_MSGCODE = 9001;
+        SET StringSQL = '9001 - HAY MAS DE UN REGISTRO CON LA CLAVE PRIMARIA';
+        CALL GPSQLWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Crear', 'procCreateAa2comi', StringSQL);
+        RETURN;
+  END IF;
+
+  SELECT 
+        CAST (YEAR(current timestamp) || substr( digits (MONTH(current timestamp)),9) || substr( digits (DAY(current timestamp)),9) AS DECIMAL(8,0)),
+        CAST (substr( digits (HOUR(current timestamp)),9) || substr( digits (MINUTE(current timestamp)),9) || substr( digits (SECOND(current timestamp)),9) AS DECIMAL(6,0) )
+           INTO V_FECGRA, V_HORA  FROM SYSIBM.SYSDUMMY1 ;
+  
+  INSERT INTO GPDATWEB.AA2COMI (COMEMP ,COMDEL ,COMFIC ,COMCOB ,COMNCO ,COMVIV ,COMCPJ ,COMCFL ,COMINP ,COMMOP ,COMSCF ,COMDIS ,COMINV ,COMFEC ,COMUSU ,COMHOR ) 
+        VALUES ( P_COMEMP , P_COMDEL , P_COMFIC , P_COMCOB , P_COMNCO , P_COMVIV , P_COMCPJ , P_COMCFL , P_COMINP , P_COMMOP , P_COMSCF , P_COMDIS , P_COMINV , V_FECGRA , P_USERNAME , V_HORA );
+
+  Set StringSQL = 'INSERT INTO GPDATWEB.AA2COMI (COMEMP ,COMDEL ,COMFIC ,COMCOB ,COMNCO ,COMVIV ,COMCPJ ,COMCFL ,COMINP ,COMMOP ,COMSCF ,COMDIS ,COMINV ,COMFEC ,COMUSU ,COMHOR ) VALUES ( '''|| P_COMEMP || ''' , '''|| P_COMDEL || ''' , '''|| P_COMFIC || ''' , '''|| P_COMCOB || ''' , '''|| P_COMNCO || ''' , '''|| P_COMVIV || ''' , '''|| P_COMCPJ || ''' , '''|| P_COMCFL || ''' , '''|| P_COMINP || ''' , '''|| P_COMMOP || ''' , '''|| P_COMSCF || ''' , '''|| P_COMDIS || ''' , '''|| P_COMINV || ''' , '''|| P_COMFEC || ''' , '''|| P_COMUSU || ''' , '''|| P_COMHOR || ''' )'; 
+  CALL GPSQLWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Crear', 'procCreateAa2comi', StringSQL);
+  SET P_MSGCODE = 0;
+END
+GO
+
+

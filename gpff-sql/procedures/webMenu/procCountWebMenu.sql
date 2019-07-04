@@ -1,0 +1,80 @@
+--DROP  PROCEDURE  GPSQLWEB.procCountWebMenu;
+
+CREATE PROCEDURE GPSQLWEB.PROCCOUNTWEBMENU ( IN P_ID INTEGER,
+                                             IN P_NAME VARCHAR(50),
+                                             IN P_URL VARCHAR(100),
+                                             IN P_PGM VARCHAR(50),
+                                             IN P_PARENTID INTEGER,
+                                             IN P_ORDERS INTEGER,
+                                             IN P_STATUSID INTEGER,
+                                             IN P_ISMENU INTEGER,
+                                             IN P_USERNAME VARCHAR(50),
+                                             IN P_IPADDRESS VARCHAR(255),
+                                             IN P_USERAGENT VARCHAR(32000),
+                                             OUT TOTAL INTEGER )
+	RESULT SETS 1
+	LANGUAGE SQL
+	SPECIFIC GPSQLWEB.PROCCOUNTWEBMENU
+
+BEGIN
+DECLARE STRINGSQL VARCHAR ( 32000 ) NOT NULL DEFAULT '' ;
+DECLARE WHERECLAUSE VARCHAR ( 32000 ) NOT NULL DEFAULT '' ;
+DECLARE SORTCLAUSE VARCHAR ( 32000 ) NOT NULL DEFAULT '' ;
+DECLARE C1 CURSOR WITH RETURN FOR STMT1 ;
+
+
+
+IF P_ID > 0 THEN
+SET WHERECLAUSE = WHERECLAUSE || ' AND ID = ' || P_ID || ' ' ;
+END IF ;
+
+
+IF P_NAME IS NOT NULL AND LENGTH ( P_NAME ) > 0 THEN
+SET P_NAME =  TRIM ( P_NAME ) ;
+SET WHERECLAUSE = WHERECLAUSE || ' AND NAME LIKE ''%' || P_NAME || '%'' ' ;
+END IF ;
+
+
+IF P_URL IS NOT NULL AND LENGTH ( P_URL ) > 0 THEN
+SET P_URL =  TRIM ( P_URL ) ;
+SET WHERECLAUSE = WHERECLAUSE || ' AND URL LIKE ''%' || P_URL || '%'' ' ;
+END IF ;
+
+
+IF P_PGM IS NOT NULL AND LENGTH ( P_PGM ) > 0 THEN
+SET P_PGM =  TRIM ( P_PGM ) ;
+SET WHERECLAUSE = WHERECLAUSE || ' AND PGM LIKE ''%' || P_PGM || '%'' ' ;
+END IF ;
+
+
+IF P_PARENTID > 0 THEN
+SET WHERECLAUSE = WHERECLAUSE || ' AND PARENTID = ' || P_PARENTID || ' ' ;
+END IF ;
+
+
+IF P_ORDERS > 0 THEN
+SET WHERECLAUSE = WHERECLAUSE || ' AND ORDERS = ' || P_ORDERS || ' ' ;
+END IF ;
+
+
+IF P_STATUSID > 0 THEN
+SET WHERECLAUSE = WHERECLAUSE || ' AND STATUSID = ' || P_STATUSID || ' ' ;
+END IF ;
+
+
+IF P_ISMENU > 0 THEN
+SET WHERECLAUSE = WHERECLAUSE || ' AND ISMENU = ' || P_ISMENU || ' ' ;
+END IF ;
+
+SET STRINGSQL = 'SELECT COUNT(1) FROM  GPSQLWEB.WEBMENU  WHERE 1=1 ' || WHERECLAUSE ;
+PREPARE STMT1 FROM STRINGSQL ;
+CALL GPSQLWEB . PROCCREATEWEBAUDIT ( P_IPADDRESS , P_USERAGENT , P_USERNAME , 'Contar' , 'procCountWebMenu' , STRINGSQL ) ;
+OPEN C1 ;
+FETCH C1 INTO TOTAL ;
+CLOSE C1 ;
+
+END;
+
+
+
+--call GPPGMWEB.procCountWebMenu(0,'','','',0,0,0,0, '', '', '')

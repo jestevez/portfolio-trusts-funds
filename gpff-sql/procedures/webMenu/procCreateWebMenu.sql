@@ -1,0 +1,31 @@
+--DROP PROCEDURE GPPGMWEB.procCreateWebMenu
+    
+CREATE PROCEDURE GPPGMWEB.procCreateWebMenu
+(
+   IN P_NAME VARCHAR(50),
+                 IN P_URL VARCHAR(100),
+                 IN P_PGM VARCHAR(50),
+                 IN P_PARENTID INTEGER,
+                 IN P_ORDERS INTEGER,
+                 IN P_STATUSID INTEGER,
+                 IN P_ISMENU INTEGER,
+                
+  IN P_USERNAME VARCHAR(50),
+  IN P_IPADDRESS VARCHAR(255),
+  IN P_USERAGENT VARCHAR(500),
+  OUT P_ID INTEGER
+)
+LANGUAGE SQL
+BEGIN
+  Declare StringSQL Varchar(32000) Not Null Default '';
+  
+        INSERT INTO  GPPGMWEB.WEBMENU (NAME ,URL ,PGM ,PARENTID ,ORDERS ,STATUSID ,ISMENU ) VALUES ( P_NAME , P_URL , P_PGM , P_PARENTID , P_ORDERS , P_STATUSID , P_ISMENU );
+        SELECT IDENTITY_VAL_LOCAL() AS LASTID INTO P_ID FROM SYSIBM.SYSDUMMY1;
+
+  Set StringSQL = 'INSERT INTO  GPPGMWEB.WEBMENU (NAME ,URL ,PGM ,PARENTID ,ORDERS ,STATUSID ,ISMENU ) VALUES ( '''|| P_NAME || ''' , '''|| P_URL || ''' , '''|| P_PGM || ''' , '''|| P_PARENTID || ''' , '''|| P_ORDERS || ''' , '''|| P_STATUSID || ''' , '''|| P_ISMENU || ''' )'; 
+  CALL GPPGMWEB.procCreateWebAudit (P_IPADDRESS, P_USERAGENT, P_USERNAME, 'Crear', 'procCreateWebMenu', StringSQL);
+END
+GO
+
+
+
