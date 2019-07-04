@@ -1,0 +1,331 @@
+/*
+ * ReadAa2ctaProcedure.java
+ *
+ * Copyright 2014 - Soluciones Integrales Open-Source SiOS
+ * Copyright 2014 - Fundación para la Investigación y Desarrollo del Software Libre en Venezuela
+ *
+ * http://www.sios.com.ve
+ * http://www.indesoft.org.ve
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package ve.com.sios.gpff.jdbc.procedure.aa2cta;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.SqlReturnResultSet;
+import org.springframework.jdbc.object.StoredProcedure;
+import org.springframework.stereotype.Service;
+
+import ve.com.sios.gpff.beans.Aa2cta;
+import ve.com.sios.gpff.beans.AuthorizationData;
+
+/**
+ * The Class ReadAa2ctaProcedure.
+ *
+ * @author Soluciones Integrales Open-Source SiOS http://www.sios.com.ve
+ * @version 1.0
+ * @date 31/03/2014
+ */
+@Service
+public class ReadAa2ctaProcedure extends StoredProcedure {
+
+    /** The Constant SP_NAME. */
+    private static final String SP_NAME = "procReadAa2cta";
+
+    /**
+     * Instantiates a new read aa 2 cta procedure.
+     *
+     * @param dataSource the data source
+     */
+    @Autowired
+    public ReadAa2ctaProcedure(DataSource dataSource) {
+        super(dataSource, SP_NAME);
+
+        declareParameter(new SqlParameter("P_ROWID", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAEMP", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTADEL", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTADIV", Types.INTEGER));
+        declareParameter(new SqlParameter("P_CTAGEN", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTACTE", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTACAT", Types.INTEGER));
+        declareParameter(new SqlParameter("P_CTASUB", Types.INTEGER));
+        declareParameter(new SqlParameter("P_CTATCT", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTANOM", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTAMDD", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAMDC", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAMED", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAMEC", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAAPE", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAULM", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTACAN", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTABLO", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTALIQ", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTAFRL", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTAIID", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAFID", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTATDB", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTASDB", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTAIND", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAIMD", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAIXD", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAIIC", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAFIC", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTATCR", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTASCR", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTAINC", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAIMC", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAIXC", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTALIM", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAIEX", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTACOM", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTALCD", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTALCC", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAILC", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAILD", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAAID", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAAIA", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTAARE", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTABL1", Types.INTEGER));
+        declareParameter(new SqlParameter("P_CTABL2", Types.INTEGER));
+        declareParameter(new SqlParameter("P_CTABCD", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTABCC", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTABBD", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTABBC", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTABSD", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTABSC", Types.BIGINT));
+        declareParameter(new SqlParameter("P_CTASFD", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTASFP", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTASDI", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTASPT", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTASVD", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTASVP", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTABL4", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTAFRE", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTASIT", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTARES", Types.INTEGER));
+        declareParameter(new SqlParameter("P_CTACGE", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_CTAADD", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAADC", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAAPD", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTAAPC", Types.DOUBLE));
+        declareParameter(new SqlParameter("P_CTADPR", Types.VARCHAR));
+
+        declareParameter(new SqlParameter("P_FIRSTRESULT", Types.INTEGER));
+        declareParameter(new SqlParameter("P_MAXRESULT", Types.INTEGER));
+        declareParameter(new SqlParameter("P_SORT", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_USERNAME", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_IPADDRESS", Types.VARCHAR));
+        declareParameter(new SqlParameter("P_USERAGENT", Types.VARCHAR));
+
+        declareParameter(new SqlReturnResultSet("RS", new Aa2ctaMapper()));
+
+        compile();
+    }
+
+    /**
+     * Execute.
+     *
+     * @param aa2cta the aa 2 cta
+     * @param firstResult the first result
+     * @param maxResults the max results
+     * @param sortClause the sort clause
+     * @param authorizationData the authorization data
+     * @return the list
+     * @throws Exception the exception
+     */
+    public List execute(Aa2cta aa2cta, int firstResult, int maxResults, String sortClause, AuthorizationData authorizationData) throws Exception {
+
+        if (aa2cta == null || authorizationData == null) {
+            throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
+        }
+
+        List list = new ArrayList();
+        Map<String, Object> inParams = new HashMap<String, Object>();
+        inParams.put("P_ROWID", aa2cta.getRowid());
+        inParams.put("P_CTAEMP", aa2cta.getCtaemp());
+        inParams.put("P_CTADEL", aa2cta.getCtadel());
+        inParams.put("P_CTADIV", aa2cta.getCtadiv());
+        inParams.put("P_CTAGEN", aa2cta.getCtagen());
+        inParams.put("P_CTACTE", aa2cta.getCtacte());
+        inParams.put("P_CTACAT", aa2cta.getCtacat());
+        inParams.put("P_CTASUB", aa2cta.getCtasub());
+        inParams.put("P_CTATCT", aa2cta.getCtatct());
+        inParams.put("P_CTANOM", aa2cta.getCtanom());
+        inParams.put("P_CTAMDD", aa2cta.getCtamdd());
+        inParams.put("P_CTAMDC", aa2cta.getCtamdc());
+        inParams.put("P_CTAMED", aa2cta.getCtamed());
+        inParams.put("P_CTAMEC", aa2cta.getCtamec());
+        inParams.put("P_CTAAPE", aa2cta.getCtaape());
+        inParams.put("P_CTAULM", aa2cta.getCtaulm());
+        inParams.put("P_CTACAN", aa2cta.getCtacan());
+        inParams.put("P_CTABLO", aa2cta.getCtablo());
+        inParams.put("P_CTALIQ", aa2cta.getCtaliq());
+        inParams.put("P_CTAFRL", aa2cta.getCtafrl());
+        inParams.put("P_CTAIID", aa2cta.getCtaiid());
+        inParams.put("P_CTAFID", aa2cta.getCtafid());
+        inParams.put("P_CTATDB", aa2cta.getCtatdb());
+        inParams.put("P_CTASDB", aa2cta.getCtasdb());
+        inParams.put("P_CTAIND", aa2cta.getCtaind());
+        inParams.put("P_CTAIMD", aa2cta.getCtaimd());
+        inParams.put("P_CTAIXD", aa2cta.getCtaixd());
+        inParams.put("P_CTAIIC", aa2cta.getCtaiic());
+        inParams.put("P_CTAFIC", aa2cta.getCtafic());
+        inParams.put("P_CTATCR", aa2cta.getCtatcr());
+        inParams.put("P_CTASCR", aa2cta.getCtascr());
+        inParams.put("P_CTAINC", aa2cta.getCtainc());
+        inParams.put("P_CTAIMC", aa2cta.getCtaimc());
+        inParams.put("P_CTAIXC", aa2cta.getCtaixc());
+        inParams.put("P_CTALIM", aa2cta.getCtalim());
+        inParams.put("P_CTAIEX", aa2cta.getCtaiex());
+        inParams.put("P_CTACOM", aa2cta.getCtacom());
+        inParams.put("P_CTALCD", aa2cta.getCtalcd());
+        inParams.put("P_CTALCC", aa2cta.getCtalcc());
+        inParams.put("P_CTAILC", aa2cta.getCtailc());
+        inParams.put("P_CTAILD", aa2cta.getCtaild());
+        inParams.put("P_CTAAID", aa2cta.getCtaaid());
+        inParams.put("P_CTAAIA", aa2cta.getCtaaia());
+        inParams.put("P_CTAARE", aa2cta.getCtaare());
+        inParams.put("P_CTABL1", aa2cta.getCtabl1());
+        inParams.put("P_CTABL2", aa2cta.getCtabl2());
+        inParams.put("P_CTABCD", aa2cta.getCtabcd());
+        inParams.put("P_CTABCC", aa2cta.getCtabcc());
+        inParams.put("P_CTABBD", aa2cta.getCtabbd());
+        inParams.put("P_CTABBC", aa2cta.getCtabbc());
+        inParams.put("P_CTABSD", aa2cta.getCtabsd());
+        inParams.put("P_CTABSC", aa2cta.getCtabsc());
+        inParams.put("P_CTASFD", aa2cta.getCtasfd());
+        inParams.put("P_CTASFP", aa2cta.getCtasfp());
+        inParams.put("P_CTASDI", aa2cta.getCtasdi());
+        inParams.put("P_CTASPT", aa2cta.getCtaspt());
+        inParams.put("P_CTASVD", aa2cta.getCtasvd());
+        inParams.put("P_CTASVP", aa2cta.getCtasvp());
+        inParams.put("P_CTABL4", aa2cta.getCtabl4());
+        inParams.put("P_CTAFRE", aa2cta.getCtafre());
+        inParams.put("P_CTASIT", aa2cta.getCtasit());
+        inParams.put("P_CTARES", aa2cta.getCtares());
+        inParams.put("P_CTACGE", aa2cta.getCtacge());
+        inParams.put("P_CTAADD", aa2cta.getCtaadd());
+        inParams.put("P_CTAADC", aa2cta.getCtaadc());
+        inParams.put("P_CTAAPD", aa2cta.getCtaapd());
+        inParams.put("P_CTAAPC", aa2cta.getCtaapc());
+        inParams.put("P_CTADPR", aa2cta.getCtadpr());
+
+        inParams.put("P_FIRSTRESULT", firstResult);
+        inParams.put("P_MAXRESULT", maxResults);
+        inParams.put("P_SORT", sortClause);
+        inParams.put("P_USERNAME", authorizationData.getUserName());
+        inParams.put("P_IPADDRESS", authorizationData.getIpAddress());
+        inParams.put("P_USERAGENT", authorizationData.getUserAgent());
+        try {
+            Map<String, Object> maps = super.execute(inParams);
+            for (Iterator it = maps.entrySet().iterator(); it.hasNext();) {
+                list = (List) ((Map.Entry) it.next()).getValue();
+            }
+            return list;
+        } catch (Exception e) {
+            logger.error("Error invocando el metodo execute: ", e);
+            throw e;
+        }
+    }
+
+}
+
+class Aa2ctaMapper implements RowMapper<Aa2cta> {
+
+    public Aa2cta mapRow(ResultSet rs, int i) throws SQLException {
+        Aa2cta aa2cta = new Aa2cta();
+        aa2cta.setRowid(rs.getLong("ROWID"));
+        aa2cta.setCtaemp(rs.getString("CTAEMP"));
+        aa2cta.setCtadel(rs.getString("CTADEL"));
+        aa2cta.setCtadiv(rs.getInt("CTADIV"));
+        aa2cta.setCtagen(rs.getString("CTAGEN"));
+        aa2cta.setCtacte(rs.getLong("CTACTE"));
+        aa2cta.setCtacat(rs.getInt("CTACAT"));
+        aa2cta.setCtasub(rs.getInt("CTASUB"));
+        aa2cta.setCtatct(rs.getString("CTATCT"));
+        aa2cta.setCtanom(rs.getString("CTANOM"));
+        aa2cta.setCtamdd(rs.getDouble("CTAMDD"));
+        aa2cta.setCtamdc(rs.getDouble("CTAMDC"));
+        aa2cta.setCtamed(rs.getDouble("CTAMED"));
+        aa2cta.setCtamec(rs.getDouble("CTAMEC"));
+        aa2cta.setCtaape(rs.getLong("CTAAPE"));
+        aa2cta.setCtaulm(rs.getLong("CTAULM"));
+        aa2cta.setCtacan(rs.getLong("CTACAN"));
+        aa2cta.setCtablo(rs.getLong("CTABLO"));
+        aa2cta.setCtaliq(rs.getString("CTALIQ"));
+        aa2cta.setCtafrl(rs.getString("CTAFRL"));
+        aa2cta.setCtaiid(rs.getLong("CTAIID"));
+        aa2cta.setCtafid(rs.getLong("CTAFID"));
+        aa2cta.setCtatdb(rs.getString("CTATDB"));
+        aa2cta.setCtasdb(rs.getString("CTASDB"));
+        aa2cta.setCtaind(rs.getDouble("CTAIND"));
+        aa2cta.setCtaimd(rs.getDouble("CTAIMD"));
+        aa2cta.setCtaixd(rs.getDouble("CTAIXD"));
+        aa2cta.setCtaiic(rs.getLong("CTAIIC"));
+        aa2cta.setCtafic(rs.getLong("CTAFIC"));
+        aa2cta.setCtatcr(rs.getString("CTATCR"));
+        aa2cta.setCtascr(rs.getString("CTASCR"));
+        aa2cta.setCtainc(rs.getDouble("CTAINC"));
+        aa2cta.setCtaimc(rs.getDouble("CTAIMC"));
+        aa2cta.setCtaixc(rs.getDouble("CTAIXC"));
+        aa2cta.setCtalim(rs.getLong("CTALIM"));
+        aa2cta.setCtaiex(rs.getDouble("CTAIEX"));
+        aa2cta.setCtacom(rs.getDouble("CTACOM"));
+        aa2cta.setCtalcd(rs.getLong("CTALCD"));
+        aa2cta.setCtalcc(rs.getLong("CTALCC"));
+        aa2cta.setCtailc(rs.getLong("CTAILC"));
+        aa2cta.setCtaild(rs.getLong("CTAILD"));
+        aa2cta.setCtaaid(rs.getLong("CTAAID"));
+        aa2cta.setCtaaia(rs.getLong("CTAAIA"));
+        aa2cta.setCtaare(rs.getLong("CTAARE"));
+        aa2cta.setCtabl1(rs.getInt("CTABL1"));
+        aa2cta.setCtabl2(rs.getInt("CTABL2"));
+        aa2cta.setCtabcd(rs.getLong("CTABCD"));
+        aa2cta.setCtabcc(rs.getLong("CTABCC"));
+        aa2cta.setCtabbd(rs.getLong("CTABBD"));
+        aa2cta.setCtabbc(rs.getLong("CTABBC"));
+        aa2cta.setCtabsd(rs.getLong("CTABSD"));
+        aa2cta.setCtabsc(rs.getLong("CTABSC"));
+        aa2cta.setCtasfd(rs.getDouble("CTASFD"));
+        aa2cta.setCtasfp(rs.getDouble("CTASFP"));
+        aa2cta.setCtasdi(rs.getDouble("CTASDI"));
+        aa2cta.setCtaspt(rs.getDouble("CTASPT"));
+        aa2cta.setCtasvd(rs.getDouble("CTASVD"));
+        aa2cta.setCtasvp(rs.getDouble("CTASVP"));
+        aa2cta.setCtabl4(rs.getString("CTABL4"));
+        aa2cta.setCtafre(rs.getString("CTAFRE"));
+        aa2cta.setCtasit(rs.getString("CTASIT"));
+        aa2cta.setCtares(rs.getInt("CTARES"));
+        aa2cta.setCtacge(rs.getString("CTACGE"));
+        aa2cta.setCtaadd(rs.getDouble("CTAADD"));
+        aa2cta.setCtaadc(rs.getDouble("CTAADC"));
+        aa2cta.setCtaapd(rs.getDouble("CTAAPD"));
+        aa2cta.setCtaapc(rs.getDouble("CTAAPC"));
+        aa2cta.setCtadpr(rs.getString("CTADPR"));
+
+        return aa2cta;
+    }
+}
