@@ -14,24 +14,19 @@
     <name>gpff-web</name> 
 
     <properties>
-        <maven.test.failure.ignore>true</maven.test.failure.ignore>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java-version>1.6</java-version>
-
-        <hibernate.version>4.1.4.Final</hibernate.version>
-        <sl4j.version>1.5.6</sl4j.version>
-        <org.springframework-version>4.0.5.RELEASE</org.springframework-version>
-        <spring.security.version>3.2.4.RELEASE</spring.security.version>
-        <org.aspectj-version>1.6.9</org.aspectj-version>
-        <skipTests>true</skipTests>
+        
     </properties>
 
 
     <dependencies>
         <dependency>
             <groupId>ve.com.sios.gpff</groupId>
-            <artifactId>gpff-base</artifactId>
+            <artifactId>gpff-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ve.com.sios.gpff</groupId>
+            <artifactId>gpff-dao</artifactId>
             <version>${project.version}</version>
         </dependency>
 

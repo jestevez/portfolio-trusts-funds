@@ -11,13 +11,13 @@
     	<module>../gpff-sql</module>
         <module>../gpff-commons</module>
         <module>../gpff-dao</module>
-        <module>../gpff-web</module>
+        <!-- <module>../gpff-web</module> -->
     </modules>
 
     <properties>
-		<javaSourceCompatibility>1.7</javaSourceCompatibility>
+        <javaSourceCompatibility>1.7</javaSourceCompatibility>
         <javaTargetCompatibility>1.7</javaTargetCompatibility>
-		<!-- Optional : default value was cp1252 -->
+        <!-- Optional : default value was cp1252 -->
         <sourceEncoding>UTF-8</sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-version>1.7</java-version>
@@ -29,10 +29,13 @@
         <org.springframework-version>4.0.5.RELEASE</org.springframework-version>
         <spring.security.version>3.2.4.RELEASE</spring.security.version>
         <org.aspectj-version>1.6.9</org.aspectj-version>
+        <!-- versions testing -->
+        <junit.version>4.12</junit.version>
+        <mockito.version>1.10.19</mockito.version>
     </properties>
 
     <dependencies>
-		<dependency>
+        <dependency>
             <groupId>com.ibm</groupId>
             <artifactId>jt400</artifactId>
             <version>${jt400.version}</version>
@@ -144,5 +147,20 @@
             <artifactId>spring-security-web</artifactId>
             <version>${spring.security.version}</version>
         </dependency>
+
+        <!-- testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>
