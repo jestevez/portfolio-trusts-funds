@@ -34,7 +34,8 @@ import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 
 import ve.com.sios.gpff.beans.Aa2traid;
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 
 /**
  * The Class DeleteAa2traidProcedure.
@@ -73,9 +74,9 @@ public class DeleteAa2traidProcedure extends StoredProcedure {
      * @param aa2traid the aa 2 traid
      * @param authorizationData the authorization data
      * @return the int
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public int execute(Aa2traid aa2traid, AuthorizationData authorizationData) throws Exception {
+    public int execute(Aa2traid aa2traid, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (aa2traid == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -92,8 +93,8 @@ public class DeleteAa2traidProcedure extends StoredProcedure {
 
             return (Integer) maps.get("P_MSGCODE");
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 

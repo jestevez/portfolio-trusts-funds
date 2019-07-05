@@ -34,7 +34,8 @@ import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 
 import ve.com.sios.gpff.beans.Aa2tconc;
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 
 /**
  * The Class CountAa2tconcProcedure.
@@ -79,9 +80,9 @@ public class CountAa2tconcProcedure extends StoredProcedure {
      * @param aa2tconc the aa 2 tconc
      * @param authorizationData the authorization data
      * @return the int
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public int execute(Aa2tconc aa2tconc, AuthorizationData authorizationData) throws Exception {
+    public int execute(Aa2tconc aa2tconc, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (aa2tconc == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -102,8 +103,8 @@ public class CountAa2tconcProcedure extends StoredProcedure {
 
             return (Integer) maps.get("TOTAL");
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 

@@ -33,7 +33,8 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 import ve.com.sios.gpff.beans.Cotfondo;
 
 /**
@@ -78,9 +79,9 @@ public class CreateCotfondoProcedure extends StoredProcedure {
      * @param cotfondo the cotfondo
      * @param authorizationData the authorization data
      * @return the int
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public int execute(Cotfondo cotfondo, AuthorizationData authorizationData) throws Exception {
+    public int execute(Cotfondo cotfondo, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (cotfondo == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -101,8 +102,8 @@ public class CreateCotfondoProcedure extends StoredProcedure {
             return (Integer) maps.get("P_MSGCODE");
 
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 

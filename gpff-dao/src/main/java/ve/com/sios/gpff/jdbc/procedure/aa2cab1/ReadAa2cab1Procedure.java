@@ -40,7 +40,8 @@ import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 
 import ve.com.sios.gpff.beans.Aa2cab1;
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 
 /**
  * The Class ReadAa2cab1Procedure.
@@ -98,9 +99,9 @@ public class ReadAa2cab1Procedure extends StoredProcedure {
      * @param sortClause the sort clause
      * @param authorizationData the authorization data
      * @return the list
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public List execute(Aa2cab1 aa2cab1, int firstResult, int maxResults, String sortClause, AuthorizationData authorizationData) throws Exception {
+    public List execute(Aa2cab1 aa2cab1, int firstResult, int maxResults, String sortClause, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (aa2cab1 == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -134,8 +135,8 @@ public class ReadAa2cab1Procedure extends StoredProcedure {
             }
             return list;
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 

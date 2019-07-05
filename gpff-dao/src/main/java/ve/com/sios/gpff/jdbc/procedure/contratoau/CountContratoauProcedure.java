@@ -33,7 +33,8 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 import ve.com.sios.gpff.beans.Contratoau;
 
 /**
@@ -79,9 +80,9 @@ public class CountContratoauProcedure extends StoredProcedure {
      * @param contratoau the contratoau
      * @param authorizationData the authorization data
      * @return the int
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public int execute(Contratoau contratoau, AuthorizationData authorizationData) throws Exception {
+    public int execute(Contratoau contratoau, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (contratoau == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -102,8 +103,8 @@ public class CountContratoauProcedure extends StoredProcedure {
 
             return (Integer) maps.get("TOTAL");
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 

@@ -34,7 +34,8 @@ import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 
 import ve.com.sios.gpff.beans.Aa2balxi;
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 
 /**
  * The Class DeleteAa2balxiProcedure.
@@ -73,9 +74,9 @@ public class DeleteAa2balxiProcedure extends StoredProcedure {
      * @param aa2balxi the aa 2 balxi
      * @param authorizationData the authorization data
      * @return the int
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public int execute(Aa2balxi aa2balxi, AuthorizationData authorizationData) throws Exception {
+    public int execute(Aa2balxi aa2balxi, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (aa2balxi == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -92,8 +93,8 @@ public class DeleteAa2balxiProcedure extends StoredProcedure {
 
             return (Integer) maps.get("P_MSGCODE");
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 

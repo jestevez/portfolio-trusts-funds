@@ -34,7 +34,8 @@ import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 
 import ve.com.sios.gpff.beans.Aa2emiso;
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 
 /**
  * The Class CreateAa2emisoProcedure.
@@ -80,9 +81,9 @@ public class CreateAa2emisoProcedure extends StoredProcedure {
      * @param aa2emiso the aa 2 emiso
      * @param authorizationData the authorization data
      * @return the int
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public int execute(Aa2emiso aa2emiso, AuthorizationData authorizationData) throws Exception {
+    public int execute(Aa2emiso aa2emiso, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (aa2emiso == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -105,8 +106,8 @@ public class CreateAa2emisoProcedure extends StoredProcedure {
             return (Integer) maps.get("P_EMICLA");
 
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 

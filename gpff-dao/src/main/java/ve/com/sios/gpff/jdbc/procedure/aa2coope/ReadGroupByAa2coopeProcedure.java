@@ -33,7 +33,8 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlReturnResultSet;
 import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 import ve.com.sios.gpff.beans.Aa2coope;
     
 
@@ -69,7 +70,7 @@ public class ReadGroupByAa2coopeProcedure extends StoredProcedure implements Ser
         compile();
     }
 
-    public List execute(Aa2coope aa2coope, int firstResult, int maxResults, String sortClause, AuthorizationData authorizationData) throws Exception{
+    public List execute(Aa2coope aa2coope, int firstResult, int maxResults, String sortClause, AuthorizationData authorizationData) throws GpffDaoException{
         
         if(aa2coope == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -92,8 +93,8 @@ public class ReadGroupByAa2coopeProcedure extends StoredProcedure implements Ser
             }
             return list;
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 

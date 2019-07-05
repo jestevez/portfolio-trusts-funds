@@ -36,7 +36,8 @@ import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.stereotype.Service;
 
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 import ve.com.sios.gpff.beans.Splfile;
 
 /**
@@ -83,9 +84,9 @@ public class CreateSplfileProcedure extends StoredProcedure {
      * @param splfile the splfile
      * @param authorizationData the authorization data
      * @return the int
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public int execute(Splfile splfile, AuthorizationData authorizationData) throws Exception {
+    public int execute(Splfile splfile, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (splfile == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -114,8 +115,8 @@ public class CreateSplfileProcedure extends StoredProcedure {
 
             return (maps.get("P_ID") != null ? ((Long) maps.get("P_ID")).intValue() : 0);
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 }

@@ -34,7 +34,8 @@ import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 
 import ve.com.sios.gpff.beans.Aa2gesto;
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 
 /**
  * The Class CreateAa2gestoProcedure.
@@ -75,9 +76,9 @@ public class CreateAa2gestoProcedure extends StoredProcedure {
      * @param aa2gesto the aa 2 gesto
      * @param authorizationData the authorization data
      * @return the long
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public Long execute(Aa2gesto aa2gesto, AuthorizationData authorizationData) throws Exception {
+    public Long execute(Aa2gesto aa2gesto, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (aa2gesto == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -95,8 +96,8 @@ public class CreateAa2gestoProcedure extends StoredProcedure {
 
             return (Long) maps.get("P_GESCLA");
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 

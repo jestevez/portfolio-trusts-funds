@@ -39,7 +39,8 @@ import org.springframework.jdbc.core.SqlReturnResultSet;
 import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Service;
 
-import ve.com.sios.gpff.beans.AuthorizationData;
+import ve.com.sios.gpff.common.beans.AuthorizationData;
+import ve.com.sios.gpff.exception.GpffDaoException;
 import ve.com.sios.gpff.beans.Tabtr;
 
 
@@ -89,9 +90,9 @@ public class ReadTabtrProcedure extends StoredProcedure {
      * @param sortClause the sort clause
      * @param authorizationData the authorization data
      * @return the list
-     * @throws Exception the exception
+     * @throws GpffDaoException the exception
      */
-    public List execute(Tabtr tabtr, int firstResult, int maxResults, String sortClause, AuthorizationData authorizationData) throws Exception {
+    public List execute(Tabtr tabtr, int firstResult, int maxResults, String sortClause, AuthorizationData authorizationData) throws GpffDaoException {
 
         if (tabtr == null || authorizationData == null) {
             throw new IllegalArgumentException("El metodo execute no se puede llamar con paramentros nulos");
@@ -115,8 +116,8 @@ public class ReadTabtrProcedure extends StoredProcedure {
             }
             return list;
         } catch (Exception e) {
-            logger.error("Error invocando el metodo execute: ", e);
-            throw e;
+            
+            throw new GpffDaoException(e);
         }
     }
 
