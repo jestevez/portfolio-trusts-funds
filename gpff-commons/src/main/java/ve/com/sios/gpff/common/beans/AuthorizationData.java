@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-package ve.com.sios.gpff.beans;
+package ve.com.sios.gpff.common.beans;
 
 import java.io.Serializable;
 
