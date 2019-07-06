@@ -1,0 +1,15 @@
+
+STRPDM
+
+ Archivo . . . . . :   QDDSSRC                Miembro . . . . . . :  RETFIDFM
+   Biblioteca  . . :     GPPGMDIV             Tipo fuente . . . . :  DSPF      
+
+= Green screen command
+Opcion 17
+17   RETFIDFM    DSPF        Retiro del Fideicomiso - Fecha Dia
+
+= Green screen command
+Opcion 20
+12      20    FMT3          RECORD                      01/11/09
+
+Colocar un signo de interrogacion adelante para ver el nombre de los campos               
