@@ -1,0 +1,70 @@
+     H DECEDIT('0,') DFTNAME(SI0201) DATEDIT(*DMY.)
+      *
+     FTIPOSFID  IF   E           K DISK
+     FCONTFIFM  CF   E             WORKSTN
+     F                                     SFILE(FMTSF1:NRR)
+      *
+     C     *ENTRY        PLIST
+     C                   PARM                    FIDTIP            2 0
+     C                   PARM                    FIDTXT           14
+     C                   PARM                    CRE               1
+     C                   PARM                    RET               1
+      *
+     C     CRE           IFEQ      'N'
+     C                   SETON                                        52
+     C                   END
+      *
+     C                   Z-ADD     FIDTIP        CODAUX            2 0
+     C                   EXSR      CARGA
+     C                   EXFMT     FMTCT1
+      *
+      * Tratamiento del subarchivo.
+     C     *IN12         DOWEQ     *OFF
+     C     *IN06         IFEQ      *ON
+     C                   CALL      'CRETIP'
+     C                   PARM                    CRE
+     C                   EXSR      CARGA
+     C                   ELSE
+      *
+     C   50              READC     FMTSF1                                 40
+     C     *IN40         DOWEQ     *OFF
+     C     *IN55         ANDEQ     *OFF
+     C     OPC           IFEQ      'X'
+     C                   SETON                                          1255
+     C                   ELSE
+     C   50              READC     FMTSF1                                 40
+     C                   END
+     C                   END
+     C                   END
+     C  N12              EXFMT     FMTCT1
+     C                   END
+     C   12
+     CANN55              MOVE      '1'           RET
+     C   12
+     CANN55              Z-ADD     CODAUX        FIDTIP
+     C*
+     C                   SETON                                        LR
+      *
+      *----------------------------------------------------------------
+      *
+     C     CARGA         BEGSR
+      * Se inicializa el subarchivo.
+     C                   SETOFF                                         5051
+     C                   WRITE     FMTCT1
+     C                   SETON                                          5051
+     C                   Z-ADD     0             NRR               4 0
+      * Carga del subarchivo.
+     C                   Z-ADD     0             FIDTIP
+     C     FIDTIP        SETLL     TIPOSFID
+     C                   READ      TIPOSFID                               40
+     C     *IN40         DOWEQ     *OFF
+     C                   MOVE      *BLANKS       OPC
+     C                   ADD       1             NRR
+     C                   WRITE     FMTSF1
+     C                   READ      TIPOSFID                               40
+     C                   END
+     C     NRR           IFEQ      *ZERO
+     C                   SETOFF                                           50
+     C                   END
+      *
+     C                   ENDSR

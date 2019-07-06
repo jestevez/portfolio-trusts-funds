@@ -1,0 +1,19 @@
+     A*****************************************************************
+     A* DEFINICION DE CAMPOS PARA ARCHIVO DE FECHAS = AA2FEC
+     A*****************************************************************
+     A          R AA2FEC0
+     A            FECHA          6S 0       COLHDG('DDMMAA')
+     A            FECNRR         5  0       COLHDG('JULIANO')
+     A            FECNOM         8          COLHDG('NOMBRE DEL DIA')
+     A            FECCOD         1S 0       COLHDG('0=NO CONT.1=SI')
+     A            FECBL1         6          COLHDG('BLANCOS')
+     A            FECINA         9  7       COLHDG('INTERES BASICO =A')
+     A            FECINB         9  7       COLHDG('INTERES BASICO =B')
+     A            FECINC         9  7       COLHDG('INTERES BASICO =C')
+     A            FECIND         9  7       COLHDG('INTERES BASICO =D')
+     A            FECINE         9  7       COLHDG('INTERES BASICO =E')
+     A            FECING         9  7       COLHDG('INTERES BASICO =G')
+     A            FECFIE        30          COLHDG('SERIE FIESTAS')
+     A            FECAMD         8S 0       COLHDG('FECHA AAAAMMDD')
+     A**
+     A          K FECHA

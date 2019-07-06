@@ -1,0 +1,307 @@
+
+     H DECEDIT('0,') DATEDIT(*DMY.)
+     F*
+     F*---------------------------------------------------------------------
+     F*
+     FAA2TFIDE  IF   E           K DISK
+     FTIPOS     IF   E           K DISK
+     FCARFIUSF  IF   E           K DISK
+     FPERFIL    UF A E           K DISK
+     FPERFIL2   UF A E           K DISK
+     FPERFIL3   UF A E           K DISK
+     FPERFILFM  CF   E             WORKSTN SFILE(FMTSF1:NRR1)
+     F                                     SFILE(WDWSF1:NRR2)
+     F                                     SFILE(WDWSF2:NRR3)
+     F*
+     C*---------------------------------------------------------------------
+     C*
+     C     CLAVE         KLIST
+     C                   KFLD                    PRFPRF
+     C                   KFLD                    PRFARE
+     C*
+     C     CLAVE2        KLIST
+     C                   KFLD                    PRFPRF
+     C                   KFLD                    PRFTIP
+     C*
+     C     CLAVE3        KLIST
+     C                   KFLD                    PRFPRF
+     C                   KFLD                    FIDTIP
+     C*
+     C*---------------------------------------------------------------------
+     C*
+     C                   EXSR      CARGA1
+     C                   WRITE     PIE1
+     C                   EXFMT     FMTCT1
+     C*
+     C     *IN03         DOWEQ     *OFF
+     C     *IN06         IFEQ      *ON
+     C*
+     C                   MOVE      *BLANKS       PRFPRF
+     C                   MOVE      *BLANKS       PRFNOM
+     C                   MOVE      *BLANKS       PRFCED
+     C                   SETON                                            30
+     C                   EXSR      CREAR
+     C  N12              EXSR      MANT
+     C  N12              EXSR      MANT2
+     C                   ELSE
+     C*
+     C                   READC     FMTSF1                                 40
+     C     *IN40         DOWEQ     *OFF
+     C     OPC           IFEQ      'X'
+     C                   EXSR      CREAR
+     C  N12              EXSR      MANT
+     C  N12              EXSR      MANT2
+     C                   END
+     C                   READC     FMTSF1                                 40
+     C                   END
+     C                   END
+     C                   EXSR      CARGA1
+     C                   WRITE     PIE1
+     C                   EXFMT     FMTCT1
+     C                   END
+     C*
+     C                   SETON                                        LR
+     C*
+     C*---------------------------------------------------------------------
+     C*
+     C     CREAR         BEGSR
+     C*
+     C                   EXFMT     WDW1
+     C     *IN31         DOWEQ     *OFF
+     C     *IN12         ANDEQ     *OFF
+     C     PRFPRF        IFEQ      *BLANKS
+     C     PRFNOM        OREQ      *BLANKS
+     C     PRFCED        OREQ      *BLANKS
+     C                   SETON                                        25
+     C                   ELSE
+     C                   MOVE      PRFNOM        AUXNOM           45
+     C                   MOVE      PRFCED        AUXCED           12
+     C     PRFPRF        CHAIN     PERFIL                             41
+     C                   MOVE      AUXNOM        PRFNOM
+     C                   MOVE      AUXCED        PRFCED
+     C     *IN41         IFEQ      *OFF
+     C     *IN30         IFEQ      *ON
+     C                   SETON                                        26
+     C                   ELSE
+     C                   UPDATE    RPRF
+     C                   SETON                                        31
+     C                   END
+     C                   ELSE
+     C   30              WRITE     RPRF
+     C                   SETON                                        3132
+     C                   END
+     C                   MOVE      *BLANKS       PRFARE
+     C                   END
+     C  N31              EXFMT     WDW1
+     C                   SETOFF                                       2526
+     C                   END
+     C                   SETOFF                                       3031
+     C*
+     C                   ENDSR
+     C*
+     C*---------------------------------------------------------------------
+     C*
+     C     MANT          BEGSR
+     C*
+     C                   SETOFF                                       29
+     C                   EXSR      CARGA2
+     C*
+     C     NRR2          IFNE      *ZEROS
+     C                   EXFMT     WDWCT1
+     C     *IN12         DOWEQ     *OFF
+     C     *IN29         ANDEQ     *OFF
+     C*
+     C     CTLARE        IFNE      *BLANKS
+     C                   MOVE      CTLARE        PRFARE
+     C                   EXSR      CARGA2
+     C                   ELSE
+     C*
+     C                   READC     WDWSF1                                 42
+     C     *IN42         DOWEQ     *OFF
+     C*
+     C     SEL           IFEQ      'X'
+     C     CLAVE         CHAIN     PERFIL2                            43
+     C*
+     C     *IN43         IFEQ      *ON
+     C                   WRITE     RPRF2
+     C                   ELSE
+     C                   UPDATE    RPRF2
+     C                   END
+     C*
+     C                   ELSE
+     C*
+     C     CLAVE         CHAIN     PERFIL2                            43
+     C  N43              DELETE    RPRF2
+     C                   END
+     C*
+     C                   SETON                                        29
+     C*
+     C                   READC     WDWSF1                                 42
+     C                   END
+     C*
+     C                   END
+     C*
+     C  N29              EXFMT     WDWCT1
+     C                   END
+     C*
+     C                   ENDIF
+     C*
+     C                   ENDSR
+     C*
+     C*---------------------------------------------------------------------
+     C*
+     C     MANT2         BEGSR
+     C*
+     C                   SETOFF                                       29
+     C                   EXSR      CARGA3
+     C*
+     C     NRR3          IFNE      *ZEROS
+     C*
+     C                   EXFMT     WDWCT2
+     C     *IN12         DOWEQ     *OFF
+     C     *IN29         ANDEQ     *OFF
+     C*
+     C                   READC     WDWSF2                                 42
+     C     *IN42         DOWEQ     *OFF
+     C*
+     C     SEL           IFEQ      'X'
+     C     CLAVE2        CHAIN     PERFIL3                            43
+     C*
+     C     *IN43         IFEQ      *ON
+     C                   WRITE     RPRF3
+     C                   ELSE
+     C                   UPDATE    RPRF3
+     C                   END
+     C*
+     C                   ELSE
+     C*
+     C     CLAVE2        CHAIN     PERFIL3                            43
+     C  N43              DELETE    RPRF3
+     C                   END
+     C*
+     C                   SETON                                        29
+     C                   READC     WDWSF2                                 42
+     C                   END
+     C*
+     C  N29              EXFMT     WDWCT2
+     C                   END
+     C*
+     C                   ENDIF
+     C*
+     C                   ENDSR
+     C*
+     C*---------------------------------------------------------------------
+     C*
+     C     CARGA1        BEGSR
+     C*
+     C                   SETOFF                                         5051
+     C                   WRITE     FMTCT1
+     C                   SETON                                          5051
+     C                   Z-ADD     0             NRR1              4 0
+     C*
+     C                   MOVE      *BLANKS       PRFPRF
+     C     PRFPRF        SETLL     PERFIL
+     C                   READ      PERFIL                                 40
+     C     *IN40         DOWEQ     *OFF
+     C                   MOVE      *BLANKS       OPC
+     C                   ADD       1             NRR1
+     C                   WRITE     FMTSF1
+     C                   READ      PERFIL                                 40
+     C                   END
+     C     NRR1          IFEQ      *ZERO
+     C                   SETOFF                                           50
+     C                   END
+     C*
+     C                   ENDSR
+     C*
+     c*---------------------------------------------------------------------
+     C*
+     C     CARGA2        BEGSR
+     C*
+     C                   CLOSE     PERFIL2
+     C                   CALL      'CARFIUS'
+     C                   PARM                    PRFPRF
+     C*
+     C                   OPEN      PERFIL2
+     C     PRFPRF        IFNE      *BLANKS
+     C                   SETOFF                                         6061
+     C                   WRITE     WDWCT1
+     C                   SETON                                          6061
+     C                   Z-ADD     0             NRR2              4 0
+     C*
+     C                   MOVE      PRFPRF        PRFAUX           10
+     C                   MOVE      PRFARE        AREA             15
+     C     AREA          SETLL     AA2TFIDE
+     C                   READ      AA2TFIDE                               41
+     C     *IN41         DOWEQ     *OFF
+     C                   MOVE      *BLANKS       SEL
+     C                   MOVE      FIDCLA        PRFARE
+     C     FIDFIN        IFEQ      *BLANK
+     C                   ADD       1             NRR2
+     C     CLAVE         CHAIN     PERFIL2                            40
+     C     *IN40         IFEQ      *ON
+     C     *IN32         IFEQ      *ON
+     C                   MOVE      ' '           SEL
+     C                   END
+     C                   ELSE
+     C                   MOVE      'X'           SEL
+     C                   END
+     C     CLAVE3        CHAIN     CARFIUSF                           44
+     C     *IN44         IFEQ      *OFF
+     C                   MOVE      'X'           SEL
+     C                   END
+     C                   WRITE     WDWSF1
+     C                   END
+     C*
+     C                   READ      AA2TFIDE                               41
+     C                   END
+     C*
+     C                   ENDIF
+     C*
+     C                   MOVE      PRFAUX        PRFPRF
+     C*
+     C     NRR2          IFEQ      *ZERO
+     C                   SETOFF                                           60
+     C                   END
+     C   32              SETOFF                                       32
+     C*
+     C                   ENDSR
+     C*
+     C*---------------------------------------------------------------------
+     C*
+     C     CARGA3        BEGSR
+     C*
+     C                   SETOFF                                         6061
+     C                   WRITE     WDWCT2
+     C                   SETON                                          6061
+     C                   Z-ADD     0             NRR3              4 0
+     C*
+     C                   MOVE      PRFPRF        PRFAUX           10
+     C                   Z-ADD     0             TIPO              2 0
+     C     TIPO          SETLL     TIPOS
+     C                   READ      TIPOS                                  41
+     C     *IN41         DOWEQ     *OFF
+     C                   MOVE      *BLANKS       SEL
+     C                   MOVE      TIPO          PRFTIP
+     C                   ADD       1             NRR3
+     C     CLAVE2        CHAIN     PERFIL3                            40
+     C     *IN40         IFEQ      *ON
+     C     *IN32         IFEQ      *ON
+     C                   MOVE      'X'           SEL
+     C                   END
+     C                   ELSE
+     C                   MOVE      'X'           SEL
+     C                   END
+     C                   WRITE     WDWSF2
+     C*
+     C                   READ      TIPOS                                  41
+     C                   END
+     C                   MOVE      PRFAUX        PRFPRF
+     C*
+     C     NRR3          IFEQ      *ZERO
+     C                   SETOFF                                           60
+     C                   END
+     C   32              SETOFF                                       32
+     C*
+     C                   ENDSR
+     C*

@@ -1,0 +1,5 @@
+     A          R RTIP
+     A            TIPO           2  0       COLHDG('TIPO')
+     A            TIPDES        40          COLHDG('DESCRIPCION')
+
+     A          K TIPO

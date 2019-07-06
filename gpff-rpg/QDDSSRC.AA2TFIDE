@@ -1,0 +1,8 @@
+     A          R TFIDE0
+      * TABLA DE FIDEICOMISOS
+     A            FIDCLA        15          COLHDG('CLAVE DE GRUPO ')
+     A            FIDNOM        40          COLHDG('DESCRIPCION')
+     A            FIDTIP         2  0       COLHDG('TIPO')
+     A            FIDFIN         1          COLHDG('¿FINIQUITADO?')
+     A*
+     A          K FIDCLA

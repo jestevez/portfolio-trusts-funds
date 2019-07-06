@@ -1,0 +1,162 @@
+      *
+     H DECEDIT('0,') DATEDIT(*DMY.)
+      *
+     FTIPOSFID  IF   E           K DISK
+     FAA2TDIV   IF   E           K DISK
+     FAA2TFIDE  UF A E           K DISK
+     FCREFIDFM  CF   E             WORKSTN
+      *
+      *----------------------------------------------------------------
+      *
+     D                 DS
+     d  co1                    1      1
+     d  co2                    2      4
+     d  co3                    1      4
+     D LDA            UDS
+     D  EMP                  254    255
+     D  DEL                  256    257
+     D  FIDEIC               254    257
+      *
+      *----------------------------------------------------------------
+      *
+     C     *DTAARA       DEFINE    *LDA          LDA
+     C                   IN        LDA
+      *
+     C     CLAVE         KLIST
+     C                   KFLD                    EMP
+     C                   KFLD                    DEL
+      *
+      *----------------------------------------------------------------
+      *
+     C                   MOVEL     *BLANKS       FIDCLA
+     C                   MOVE      *BLANKS       TXT
+     C                   MOVE      *BLANKS       NOM
+     C                   MOVE      FIDEIC        FIDCLA
+     C     FIDCLA        CHAIN     AA2TFIDE                           40
+     C     *IN40         IFEQ      *OFF
+     C                   MOVE      FIDNOM        NOM
+     C     FIDTIP        CHAIN     TIPOSFID                           41
+     C                   MOVE      FIDTXT        TXT
+     C                   END
+      *
+     C                   MOVE      *BLANKS       NEWCOD
+     C                   MOVE      *BLANKS       FIDTX2
+     C                   MOVE      *BLANKS       FIDNO2
+     C                   MOVE      *BLANKS       FIDTI2
+     C                   Z-ADD     999           DIVISA
+     c                   setoff                                       70
+     c                   setoff                                       20
+     C                   EXFMT     FMT1
+     c
+     c     *in03         ifeq      '1'
+     c                   goto      final
+     c                   endif
+     C     *IN03         DOWEQ     *OFF
+      *
+     C     *IN04         IFEQ      *ON
+      *
+     C     CAMCUR        IFEQ      'FIDTI2'
+     C                   MOVE      'N'           CRE
+     C                   CALL      'CONTFID'
+     C                   PARM                    FIDTI2
+     C                   PARM                    FIDTX2
+     C                   PARM                    CRE               1
+     C                   PARM                    RET               1
+     C                   ELSE
+      *
+     C     CAMCUR        IFEQ      'DIVISA'
+     C                   CALL      'CONDIV'
+     C                   PARM                    DIVIS2            3
+     C     DIVIS2        IFNE      *BLANKS
+     C                   MOVE      DIVIS2        DIVISA
+     C                   END
+     C                   END
+      *
+     C                   END
+      *
+     C                   ELSE
+      *
+     C                   MOVEL     *BLANKS       FIDCLA
+     C                   MOVE      NEWCOD        FIDCLA
+     C     FIDCLA        IFEQ      *BLANKS
+     C                   SETON                                        25
+     C                   ELSE
+     c                   exsr      depura
+     C     *IN40         IFEQ      *OFF
+     C                   SETON                                        25
+     C                   ELSE
+     C     FIDNO2        IFEQ      *BLANKS
+     C                   SETON                                        26
+     C                   ELSE
+     C     FIDTI2        CHAIN     TIPOSFID                           41
+     C     *IN41         IFEQ      *ON
+     C                   SETON                                        27
+     C                   ELSE
+     C                   MOVE      FIDTXT        FIDTX2
+     C     DIVISA        IFNE      999
+     C                   Z-ADD     DIVISA        DIVCLA
+     C     DIVCLA        CHAIN     AA2TDIV                            42
+     C     *IN42         IFEQ      *ON
+     C                   SETON                                        28
+     C                   END
+     C                   END
+     C     *IN28         IFEQ      *OFF
+      *
+     C                   WRITE     FMT1
+     C                   EXFMT     WDW1
+     C     *IN12         IFEQ      *OFF
+     C                   MOVE      NEWCOD        FIDCLA
+     C                   MOVE      FIDNO2        FIDNOM
+     C                   MOVE      FIDTI2        FIDTIP
+     C                   MOVE      *BLANKS       FIDFIN
+     C                   WRITE     TFIDE0
+     C                   SETON                                        03
+     C                   CALL      'COPCON'
+     C                   PARM                    NEWCOD
+     C                   PARM                    DIVISA
+     C                   MOVE      NEWCOD        FIDEIC
+     C                   OUT       LDA
+     C                   END
+      *
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C  N03              EXFMT     FMT1
+     C                   SETOFF                                       252627
+     C                   SETOFF                                       28
+     C                   END
+      *
+     c     final         tag
+     C                   SETON                                        LR
+      *
+      *---------------------------------------------------------------------
+     c     depura        begsr
+     c                   z-add     *zeros        cont              3 0
+     C                   MOVEL     *BLANKS       FIDCLA
+     C                   MOVE      NEWCOD        FIDCLA
+     C                   MOVE      NEWCOD        co3
+     c     co1           ifne      *blank
+     c     co2           andeq     *blank
+     c                   goto      depura1
+     c                   endif
+     c     fidcla        chain     aa2tfide                           40
+     c                   goto      depura9
+     c*
+     c                   movel     newcod        co3
+     c
+     c     depura1       tag
+     c                   add       1             cont
+     c                   move      cont          co2
+     C                   MOVEL     *BLANKS       FIDCLA
+     c                   move      co3           fidcla
+     c     fidcla        chain     aa2tfide                           41
+     c     *in41         ifeq      '0'
+     c                   goto      depura1
+     c                   endif
+     c                   seton                                        40
+     c                   movel     co3           newcod
+     c     depura9       tag
+     c                   endsr

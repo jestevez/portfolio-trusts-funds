@@ -1,0 +1,24 @@
+             PGM        PARM(&PGM &PUERTO &AREA)
+
+             DCL        VAR(&PGM) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&PUERTO) TYPE(*CHAR) LEN(5)
+             DCL        VAR(&AREA) TYPE(*CHAR) LEN(4)
+             DCL        VAR(&LISLIB) TYPE(*CHAR) LEN(2750)
+
+             RTVJOBA    USRLIBL(&LISLIB)
+
+             CHGDTAARA  DTAARA(*LDA (254 4)) VALUE(&AREA)
+
+             SNDMSG     MSG('Se ejecuta programa ' || &PGM) +
+                          TOUSR(*SYSOPR)
+             CHGLIBL    LIBL(GPPGMWEBT GPPGMWEB GPDATWEB GPMENUBAAG +
+                          GPPGMDIV GPPGMBASE QZRDSSRV QGPL QTEMP +
+                          BATCYFILES) CURLIB(GPDATWEB)
+
+             SBMJOB     CMD(CALL PGM(*LIBL/&PGM) PARM(&PUERTO)) +
+                          JOBD(QGPL/GPJOBD) JOBQ(*JOBD)
+
+  /*         CHGLIBL    LIBL(&LISLIB)     */
+
+
+             ENDPGM

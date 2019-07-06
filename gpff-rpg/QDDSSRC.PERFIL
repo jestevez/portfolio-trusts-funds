@@ -1,0 +1,6 @@
+     A          R RPRF
+     A            PRFPRF        10          COLHDG('PERFIL')
+     A            PRFNOM        45          COLHDG('NOMBRE')
+     A            PRFCED        12          COLHDG('CEDULA')
+
+     A          K PRFPRF

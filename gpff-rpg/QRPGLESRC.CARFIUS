@@ -1,0 +1,121 @@
+     H DATEDIT(*DMY)
+     Faa2fec    if   E           K DISK
+     Ftiposfid  if   E           K DISK
+     FPERFIL2   UF   E           K DISK
+     FAA2TFIDE  UF   E           K DISK
+     FCARFIUSF  UF A E           K DISK
+     Fcarfiusfm CF   E             WORKSTN
+     F                                     SFILE(panSFL:NRR)
+     F*
+     D LDA            UDS
+     D  PANT                 268    277
+     D*
+     F* Clave Autorizacion Usuarios por Tipo Fideicomiso
+     F*
+     C     CLAFIU        KLIST
+     C                   KFLD                    usuario
+     c                   kFLD                    ntipo1
+     D*
+     F* Clave Autorizacion Usuarios por Fideicomiso
+     F*
+     C     CLAPER        KLIST
+     C                   KFLD                    USUARIO
+     c                   KFLD                    AREA              4
+     C*
+     C     *ENTRY        PLIST
+     C                   PARM                    USUARIO          10
+     C*
+     C     *DTAARA       DEFINE    *LDA          LDA
+     C                   IN        LDA
+     C*
+     C* Fecha Proceso y Hora
+     C*
+     C                   z-add     udate         fecvalx           6 0
+     C     fecvalx       chain     aa2fec                             41
+     C                   z-add     fecamd        fecproceso        8 0
+     C*
+     C* Carga Tipos Fideicomiso y Autorizacion
+     C*
+     C                   exsr      carga
+     C*
+     C* Actualizacion CARFIUS
+     C*
+     c                   write     pie02
+     C                   EXFMT     panctl
+     C   12              MOVE      *BLANKS       USUARIO
+     c   12              goto      proceso9
+     C*
+     c     proceso4      tag
+     c                   readc     pansfl                                 80
+     c   80              goto      proceso9
+     c                   setoff                                       20
+     c     opcion        ifeq      'I'
+     c     opcant        andeq     *blank
+     c                   z-add     ntipo1        tipo
+     c                   z-add     fecproceso    fecgra
+     c                   time                    hora
+     c                   movel     pant          pantal
+     C                   MOVEL     USUARIO       USUARF
+     c                   write     carf
+     c                   endif
+     c     opcion        ifeq      'B'
+     c     opcant        andeq     'I'
+     c     clafiu        chain     carfiusf                           41
+     C     *IN41         IFEQ      *OFF
+     c                   delete    carfiusf
+     C*
+     C* Borra PERFIL2
+     C*
+     C                   MOVEL     *BLANKS       AREA
+     C     CLAPER        SETLL     PERFIL2
+     C                   READ      PERFIL2                                44
+     C     *IN44         DOWEQ     '0'
+     C                   MOVE      PRFARE        FIDCLA
+     C     FIDCLA        CHAIN     AA2TFIDE                           45
+     C*
+     C     *IN45         IFEQ      '0'
+     C     FIDTIP        ANDEQ     TIPO
+     C                   DELETE    RPRF2
+     C                   ENDIF
+     C                   READ      PERFIL2                                44
+     C*
+     C                   ENDDO
+     C                   ENDIF
+     C*
+     c                   endif
+     c                   goto      proceso4
+     C*
+     c     proceso9      tag
+     C*
+     c                   seton                                        lr
+     C*
+     C* Carga Tipos Fideicomiso y Autorizacion
+     C*
+     c     carga         begsr
+     c                   z-add     *zeros        nrr
+     C                   SETON                                          3031
+     C                   WRITE     panctl
+     C                   SEToff                                         3031
+     c                   z-add     *zeros        fidtip
+     c     fidtip        setll     tiposfid
+     c     carga1        tag
+     c                   read      tiposfid                               42
+     c   42              goto      carga9
+     c                   movel     *blank        opcion
+     c                   z-add     fidtip        ntipo1
+     c                   movel     fidtxt        ntipo2
+     c                   movel     *blank        estado
+     c     clafiu        chain     carfiusf                           43
+     c   43              movel     *blank        opcant
+     c   43              movel     *blank        estado
+     c  n43              movel     'I'           opcant
+     c  n43              movel     'INCLUIDO'    estado
+     c                   add       1             nrr
+     C                   WRITE     pansfl
+     c                   goto      carga1
+     c     carga9        tag
+     C     NRR           IFgt      *ZERO
+     C                   SETON                                            31
+     C                   END
+     C                   Z-ADD     1             NRR
+     c                   endsr
