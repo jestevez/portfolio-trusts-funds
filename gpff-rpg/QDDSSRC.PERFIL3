@@ -1,0 +1,6 @@
+     A          R RPRF3
+     A            PRFPRF        10          COLHDG('PERFIL')
+     A            PRFTIP         2  0       COLHDG('TIPO')
+
+     A          K PRFPRF
+     A          K PRFTIP

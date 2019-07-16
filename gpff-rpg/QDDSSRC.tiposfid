@@ -1,0 +1,5 @@
+     A          R RTIPFI
+     A            FIDTIP         2  0       COLHDG('TIPO')
+     A            FIDTXT        14          COLHDG('DESCRIPCION')
+     A*
+     A          K FIDTIP

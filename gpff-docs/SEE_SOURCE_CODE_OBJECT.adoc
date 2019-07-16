@@ -1,0 +1,9 @@
+= See source code of an object
+DSPOBJD
+
+QSYS/DSPOBJD OBJ(EIBSR04M08/CUENTACCC) OBJTYPE(*ALL)
+
+= Green screen command
+OPC 8
+
+QSRVSRC

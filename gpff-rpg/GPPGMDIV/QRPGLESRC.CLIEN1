@@ -1,0 +1,1329 @@
+     H DECEDIT('0,') DATEDIT(*DMY.)
+      */-------------------------------------------------------------------\
+      *|                                                                   |
+      *| Programa : CLIEN1   Mantenimiento de clientes                     |
+      *|                                                                   |
+      *| Indicadores utilizados :                                          |
+      *|                                                                   |
+      *|    25 -> Opción no válida                                         |
+      *|    26 -> El Cliente ya existe                                     |
+      *|    27 -> El Cliente no existe                                     |
+      *|    28 -> Sólo ha de introducir uno de los dos campos              |
+      *|    29 -> El Cliente está dado de baja                             |
+      *|    30 -> Debe introducir al menos uno de los dos campos           |
+      *|    31 -> Debe introducir la Cédula de identidad                   |
+      *|    32 -> El Nombre no puede estar en blanco                       |
+      *|    33 -> El Código de País no existe                              |
+      *|    34 -> El Código de Gestor no existe                            |
+      *|    35 -> El tipo de Cliente no existe                             |
+      *|    36 -> La Clasificación de Cliente no existe                    |
+      *|    37 -> El Código de sexo es erróneo                             |
+      *|    38 -> El Cliente está dado de baja                             |
+      *|    39 -> Fecha errónea                                            |
+      *|                                                                   |
+      *\-------------------------------------------------------------------/
+     FAA2COPO   if   e           k disk
+     FAA2MCOR1  IF   E           K DISK
+     FAA2TDIV   IF   E           K DISK
+     FAA2TPAIS  IF   E           K DISK
+     FAA2GESTO  IF   E           K DISK
+     FAA2EMISO  IF   E           K DISK
+     FAA2TIPCL  IF   E           K DISK
+     FTABCCLI   IF   E           K DISK
+     FAALMCLIF  UF A E           K DISK    RENAME(AA2MCLI0:RCLI)
+     FAA2MCLI   UF   E           K DISK
+     FCLIEN1FM  CF   E             WORKSTN
+
+      *---------------------------------------------------------------------
+
+     D LDA            UDS
+     D  EMP1                 254    255
+     D  DEL1                 256    257
+     D  USU1                 258    260
+     D  USU2                 258    267
+     D                 DS
+     D  CLIPOS1                1      2  0
+     D  CLIPOS2                3      4  0
+     D  CLIPOS3                5      9  0
+     D  CLIPOS                 1      9
+
+     D                 DS
+     D  CLINOM                 1     20
+     D  CLIAPE                21     35
+     D  CLIAP2                36     50
+     D  NCLI                   1     50
+
+     D                 DS
+     D  FECN1                  1      2  0
+     D  FECN2                  3      4  0
+     D  FECN3                  5      6  0
+     D  FECN4                  7      8  0
+     D  CLIANA                 1      8  0
+
+     D                 DS
+     D  FECA1                  1      4  0
+     D  FECA2                  5      6  0
+     D  FECA3                  7      8  0
+     D  CLIFEA                 1      8  0
+
+     D                 DS
+     D  CLIFXX                 1     15  0
+     D  CLIFAX                 1     15
+
+     D                 DS
+     D  CUSBDD                 1      2  0
+     D  CUSBDM                 3      4  0
+     D  CUSBDY                 5      6  0
+     D  FECNAC                 1      6  0
+
+     d                 ds
+     d  m1                     1      7  0
+     d  m2                     8     14  0
+     d  m3                     1     14  0
+
+     d                 ds
+     d  mm1                    1      7  0
+     d  mm2                    8     14  0
+     d  mm3                    1     14  0
+
+      *---------------------------------------------------------------------
+     C     CLACOP        KLIST
+     C                   KFLD                    COPCOD
+     C                   KFLD                    COPCO1
+
+     c     ccor          klist
+     C                   KFLD                    EMP1
+     C                   KFLD                    DEL1
+     C                   KFLD                    ctacte
+
+      * Clave para AA2GESTO
+     C     CLAGES        KLIST
+     C*                  KFLD                    EMP1
+     C*                  KFLD                    DEL1
+     C                   KFLD                    CLAG15           15 0
+
+      * Clave para TABLAS
+     C     CLATBL        KLIST
+     C                   KFLD                    CODIGO            2 0
+
+      *---------------------------------------------------------------------
+
+     C     *DTAARA       DEFINE    *LDA          LDA
+     C                   IN        LDA
+
+     C                   CLEAR                   FMT1
+     C                   CLEAR                   FMT2
+     C                   CLEAR                   FMT3
+      *
+     C                   MOVEL     *BLANKS       OPCION
+      *
+      *----------------------------------------------------------------
+      * Proceso principal.
+      *----------------------------------------------------------------
+      *
+     C     *IN03         DOWEQ     *OFF
+      *
+     C                   Z-ADD     *ZEROS        CLIDAT
+     C                   Z-ADD     *ZEROS        CLICLA
+     C                   MOVE      *BLANKS       CLINIF
+     C*
+     C                   EXFMT     FMT1
+     C                   SETOFF                                       512588
+     C                   SETOFF                                       717273
+     C                   SETOFF                                         8374
+     C     *IN03         CASEQ     '1'           SALIR
+     C                   CAS                     PROCE
+      *
+     C                   END
+     C*
+     C                   END
+      *
+     C                   SETON                                        LR
+      *
+      ******************
+      * PROCE:SELECCION DE OPCION
+      ******************
+      *
+     C     PROCE         BEGSR
+      *
+     C                   SELECT
+      *
+     C     OPCION        WHENEQ    1
+      *
+     C                   SETON                                            71
+      *
+     C     OPCION        WHENEQ    2
+      *
+     C                   SETON                                            72
+      *
+     C     OPCION        WHENEQ    3
+      *
+     C                   SETON                                            73
+      *
+     C     OPCION        WHENEQ    4
+      *
+     C                   SETON                                            74
+      *
+     C                   OTHER
+      *
+     C                   SETON                                          2588
+      *
+     C                   ENDSL
+      *
+     C     OPCION        IFEQ      1
+     C     OPCION        OREQ      2
+     C     OPCION        OREQ      3
+      *
+     C                   CALL      'PWD'
+     C                   PARM                    ACEPTA            1
+      *
+     C                   END
+      *
+     C     ACEPTA        IFEQ      'S'
+     C     OPCION        OREQ      4
+      *
+     C     *IN03         DOWEQ     '0'
+     C     *IN88         ANDEQ     '0'
+      *
+     C     OPCION        IFEQ      1
+     C     *IN50         ANDEQ     '0'
+     C     *IN03         ANDEQ     '0'
+     C                   Z-ADD     0             CLICLA
+     C                   CALL      'ULTCLI'
+     C                   PARM                    CLICLA
+     C                   SETON                                        5183
+     C                   Z-ADD     CLICLA        CLIPER            8 0
+     C                   Z-ADD     484           CLIPAI
+     C                   Z-ADD     1             CLIPOS1
+     C                   Z-ADD     0             CLIPOS2
+     C                   END
+      *
+     C                   EXFMT     FMT2
+     C                   SETOFF                                       263150
+     C                   SETOFF                                       272829
+     C                   SETOFF                                       878881
+     C                   SETOFF                                       305938
+     C                   SETOFF                                           91
+      *
+      ** SI SE PULSA F3 EN SEGUNDA PANTALLA SE DEBE RESTAR CLIENTE.
+      *
+      * lmmc
+     c     opcion        ifeq      1
+     c     *in50         andeq     '0'
+     C     *in03         andeq     '1'
+     C                   CALL      'ULTCLB'
+     C                   PARM                    CLICLA
+     C                   END
+     c*
+     c     opcion        ifeq      1
+     c     *in50         andeq     '0'
+     C     *in12         andeq     '1'
+     C                   CALL      'ULTCLB'
+     C                   PARM                    CLICLA
+     C                   END
+      *
+     C  N83*IN04         CASEQ     '1'           CONSU1
+     C     *IN03         CASEQ     '1'           SALIR
+     C     *IN12         CASEQ     '1'           SALIR
+     C     OPCION        CASEQ     1             ALTA
+     C     OPCION        CASEQ     2             SUPRE
+     C     OPCION        CASEQ     3             MODI
+     C     OPCION        CASEQ     4             VISU
+     C                   END
+      *
+     C                   END
+      *
+     C                   END
+      *
+     C                   ENDSR
+      *----------------------------------------------------------------
+      *
+      * Alta de Clientes
+      *
+     C     ALTA          BEGSR
+      *
+     C                   CLOSE     AA2MCLI
+     C*                  CLOSE     AALMCPRO
+     C                   CLOSE     AALMCLIF
+     C*                  CLOSE     CUMST
+      *
+     C                   MOVE      CLINIF        NIFAUX           12
+     C                   EXSR      VALID1
+      *
+     C     *IN50         IFEQ      '0'
+      *
+     C     *IN03         DOWEQ     '0'
+     C     *IN87         ANDEQ     '0'
+      *
+     C                   Z-ADD     CLICLA        CLIASO
+     C                   EXFMT     FMT3
+     C                   SETOFF                                       263150
+     C                   SETOFF                                       323389
+     C                   SETOFF                                       343536
+     C                   SETOFF                                         3739
+     C                   SETOFF                                       525354
+     C                   SETOFF                                       555657
+      *
+      ** SI SE PULSA F3 EN TERCERA PANTALLA SE DEBE RESTAR CLIENTE.
+      *
+     c     opcion        ifeq      1
+     c     *in50         andeq     '0'
+     C     *in03         andeq     '1'
+     C                   CALL      'ULTCLB'
+     C                   PARM                    CLICLA
+     C                   END
+     c*
+     c     opcion        ifeq      1
+     c     *in50         andeq     '0'
+     C     *in12         andeq     '1'
+     C                   CALL      'ULTCLB'
+     C                   PARM                    CLICLA
+     C                   END
+      *
+     C     *IN03         CASEQ     '1'           SALIR
+     C     *IN12         CASEQ     '1'           SALI2
+     C     *IN04         CASEQ     '1'           CONSUL
+     C                   CAS                     PROCE1
+      *
+     C                   END
+      *
+     C                   END
+      *
+     C                   END
+      *
+     C                   EXSR      LIMPIA
+      *
+     C                   ENDSR
+      *----------------------------------------------------------------
+      *
+     C     SUPRE         BEGSR
+      *
+     C                   CLOSE     AA2MCLI
+     C*                  CLOSE     AALMCPRO
+     C                   CLOSE     AALMCLIF
+     C*                  CLOSE     CUMST
+      *
+     C                   EXSR      VALID2
+      *
+     C     *IN50         IFEQ      '0'
+      *
+     C                   EXSR      FECHA1
+      *
+     C     *IN03         DOWEQ     '0'
+     C     *IN87         ANDEQ     '0'
+      *
+     C                   SETON                                            91
+     C                   EXSR      VALIDA
+     C                   EXFMT     FMT3
+     C                   SETOFF                                       263150
+     C                   SETOFF                                       323389
+     C                   SETOFF                                       343536
+     C                   SETOFF                                         3739
+     C                   SETOFF                                       525354
+     C                   SETOFF                                       555657
+      *
+     C     *IN03         CASEQ     '1'           SALIR
+     C     *IN12         CASEQ     '1'           SALI2
+     C     *IN04         CASEQ     '1'           CONSUL
+     C                   CAS                     PROCE1
+      *
+     C                   END
+      *
+     C                   END
+      *
+     C                   END
+      *
+     C                   EXSR      LIMPIA
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+     C     MODI          BEGSR
+      *
+     C                   CLOSE     AA2MCLI
+     C*                  CLOSE     AALMCPRO
+     C                   CLOSE     AALMCLIF
+     C*                  CLOSE     CUMST
+      *
+     C                   EXSR      VALID2
+      *
+     C     *IN50         IFEQ      '0'
+      *
+     C                   EXSR      FECHA1
+      *
+     C     *IN03         DOWEQ     '0'
+     C     *IN87         ANDEQ     '0'
+      *
+     C     *IN89         IFEQ      '1'
+     C                   SETON                                            38
+     C                   SETOFF                                           89
+     C                   END
+      *
+     C                   EXSR      VALIDA
+     C                   EXFMT     FMT3
+     C                   SETOFF                                       263150
+     C                   SETOFF                                       323389
+     C                   SETOFF                                       343536
+     C                   SETOFF                                         3739
+     C                   SETOFF                                       525354
+     C                   SETOFF                                       555657
+      *
+     C     *IN03         CASEQ     '1'           SALIR
+     C     *IN12         CASEQ     '1'           SALI2
+     C     *IN04         CASEQ     '1'           CONSUL
+     C                   CAS                     PROCE1
+      *
+     C                   END
+      *
+     C                   END
+     C*
+     C                   END
+      *
+     C                   EXSR      LIMPIA
+     C*
+     C                   ENDSR
+      *----------------------------------------------------------------
+      *
+      * Consulta de Clientes
+      *
+     C     VISU          BEGSR
+      *
+     C                   CLOSE     AA2MCLI
+     C*                  CLOSE     AALMCPRO
+     C                   CLOSE     AALMCLIF
+     C*                  CLOSE     CUMST
+      *
+     C                   EXSR      VALID2
+      *
+     C     *IN50         IFEQ      '0'
+      *
+     C                   EXSR      FECHA1
+      *
+     C     *IN03         DOWEQ     '0'
+     C     *IN87         ANDEQ     '0'
+      *
+     C                   SETON                                            91
+     C                   EXSR      VALIDA
+     C                   EXFMT     FMT3
+     C                   SETOFF                                       263150
+     C                   SETOFF                                       323389
+     C                   SETOFF                                       343536
+     C                   SETOFF                                         3739
+     C                   SETOFF                                       525354
+     C                   SETOFF                                       555657
+     C*
+     C     *IN03         CASEQ     '1'           SALIR
+     C     *IN12         CASEQ     '1'           SALI2
+     C                   CAS                     PROCE1
+     C*
+     C                   END
+     C*
+     C                   END
+      *
+     C                   END
+      *
+     C                   EXSR      LIMPIA
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+      * Comienza la validación de los campos de clave
+      *
+     C     VALID1        BEGSR
+      *
+     C                   OPEN      AA2MCLI
+     C                   OPEN      AALMCLIF
+      *
+     C     CLINIF        IFEQ      *BLANKS
+     C                   SETON                                          3150
+     C                   ELSE
+     C     CLINIF        CHAIN     AALMCLIF                           40
+     C     *IN40         IFEQ      *OFF
+     C                   SETON                                        2650
+     C                   Z-ADD     CLIPER        CLICLA
+     C                   ELSE
+      *
+     C                   SETON                                            65
+      *
+     C                   END
+     C                   END
+     C*                  END
+      *
+     C                   ENDSR
+     C*****************
+     C* PROCE1:VALIDACION ENTRADAS
+     C*****************
+      *
+     C     PROCE1        BEGSR
+      *
+     C                   EXSR      VALIDA
+     C  N50              EXSR      CONFIR
+     C     *IN99         IFEQ      '1'
+     C     *IN50         ANDEQ     '0'
+     C                   SETON                                            87
+     C                   SETOFF                                           99
+     C                   MOVE      *BLANKS       CLINIF
+     C                   Z-ADD     *ZEROS        CLIDAT
+     C                   END
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+      * Comienza la validación de los campos de clave
+      *
+     C     VALID2        BEGSR
+      *
+     C                   SETOFF                                       596061
+     C                   SETOFF                                       636465
+     C                   SETOFF                                         3829
+      *
+     C                   OPEN      AA2MCLI
+     C*                  OPEN      AALMCPRO
+     C                   OPEN      AALMCLIF
+     C*                  OPEN      CUMST
+      *
+     C*    CLIDAT        IFNE      *ZEROS
+      *
+     C*    CLIDAT        CHAIN     AALMCPRO                           40
+      *
+     C*    *IN40         IFEQ      '1'
+     C*                  SETON                                        5081
+     C*                  ELSE
+     C*    CLIREG        IFEQ      '*'
+     C*                  SETON                                        3850
+      *
+     C*    OPCION        IFEQ      2
+     C*                  SETON                                        5029
+     C*                  ELSE
+     C*    OPCION        IFEQ      3
+     C*    OPCION        OREQ      4
+     C*                  SETON                                            38
+     C*                  SETOFF                                           50
+     C*                  END
+     C*                  END
+     C*                  ELSE
+     C*                  SETON                                          5965
+     C*                  END
+     C*                  END
+      *
+     C*    *IN50         IFEQ      '0'
+     C*    CLIDAT        CHAIN     CUMST                              41
+     C*    *IN41         IFEQ      '0'
+     C*                  SETON                                        64
+     C*                  ELSE
+     C*                  SETON                                          8150
+     C*                  END
+     C*                  END
+     C*                  ELSE
+      *
+     C     CLICLA        IFNE      0
+     C     CLINIF        ANDNE     *BLANKS
+     C                   SETON                                        2850
+     C                   ELSE
+      *
+      * Introducen CLICLA
+      *
+     C     CLICLA        IFNE      0
+     C                   SETON                                        60
+      *
+     C     CLICLA        CHAIN     AA2MCLI                            40
+      *
+      * El cliente no existe
+      *
+     C     *IN40         IFEQ      *ON
+     C                   SETON                                        2750
+     C                   ELSE
+      *
+      * El cliente está dado de baja
+      *
+     C     CLIREG        IFEQ      '*'
+     C                   SETON                                        38
+      *
+      * Error por ser una supresion de un cliente ya suprimido
+      *
+     C     OPCION        IFEQ      2
+     C                   SETON                                        5029
+     C                   END
+     C                   END
+      *
+     C                   END
+      *
+     C                   ELSE
+      *
+      * Introducen CLINIF
+      *
+     C     CLINIF        IFNE      *BLANKS
+      *
+     C                   SETON                                        61
+     C     CLINIF        CHAIN     AALMCLIF                           40
+      *
+      * El cliente no existe
+      *
+     C     *IN40         IFEQ      *ON
+      *
+     C                   SETON                                        2750
+     C                   ELSE
+      *
+      * El cliente está dado de baja
+      *
+     C     CLIREG        IFEQ      '*'
+     C                   SETON                                        38
+      *
+      * Error por ser una supresion de un cliente ya suprimido
+      *
+     C     OPCION        IFEQ      2
+     C                   SETON                                        5029
+     C                   END
+     C                   END
+      *
+     C                   END
+      *
+      * No introducen ningun campo
+      *
+     C                   ELSE
+      *
+     C                   SETON                                        5030
+      *
+     C                   END
+     C                   END
+      *
+     C                   END
+     C*
+     C*                  END
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+      * Comienza la validación de los campos
+      *
+     C     VALIDA        BEGSR
+      *
+     C                   MOVE      *BLANKS       ERR
+     C     FECNAC        IFNE      0
+     C                   Z-ADD     FECNAC        FECH1             6 0
+     C                   Z-ADD     0             FECH2
+     C                   MOVE      'C'           MODO              1
+     C                   MOVE      'T'           FRM               1
+     C                   MOVE      *BLANKS       ERR               1
+     C                   MOVE      '0'           FEST              1
+     C                   CALL      'FECHAS'
+     C                   PARM                    MODO
+     C                   PARM                    FRM
+     C                   PARM                    FECH1
+     C                   PARM                    FECH2             8 0
+     C                   PARM                    FEST
+     C                   PARM                    ERR
+     C                   END
+     C     ERR           IFEQ      '*'
+     C                   SETON                                        3950
+     C                   ELSE
+     C                   Z-ADD     FECH2         CLIANA
+     C     CLINOM        IFEQ      *BLANKS
+     C     CLIAPE        ANDEQ     *BLANKS
+     C     CLIAP2        ANDEQ     *BLANKS
+     C                   SETON                                        5032
+     C                   ELSE
+      *
+     C                   Z-ADD     CLIPAI        CLPAUX
+     C     CLPAUX        CHAIN     AA2TPAIS                           41
+     C     *IN41         IFEQ      *ON
+     C                   SETON                                        5033
+     C                   ELSE
+     C                   MOVEL     PAINOM        CLIPOB
+      *
+     C                   Z-ADD     CLIGES        CLAG15
+     C                   MOVEL     40            CLAG15
+     C     CLAGES        CHAIN     AA2GESTO                           42
+     C*          *IN42     IFEQ *ON
+     C*                    SETON                     5034
+     C*                    ELSE
+     C*
+     C*
+     c                   SETOFF                                       6662
+     C     CLIPOS        IFNE      *BLANKS
+     C                   MOVEL     CLIPOS1       COPCOD
+     C                   MOVEL     CLIPOS2       COPCO1
+     C                   MOVE      CLIPOS3       COPCO1
+     C     CLIPOS2       IFEQ      *ZEROS
+     C     CLIPOS3       ANDEQ     *ZEROS
+     C                   MOVEL     *BLANKS       COPCO1
+     C                   ENDIF
+     C     CLACOP        CHAIN     AA2COPO                            66
+     C                   ENDIF
+     C     *IN66         IFEQ      *ON
+     C                   SETON                                        5066
+     C                   MOVEL     *BLANKS       CLIPRO
+     C*
+     C                   ELSE
+     C*
+     C                   Z-ADD     CLITC1        CLTAUX
+     c                   Z-ADD     CLITC1        WCLITC1           2 0
+     C                   MOVEL     COPNOM        CLIPRO
+     C     CLTAUX        CHAIN     AA2TIPCL                           43
+     C     *IN43         IFEQ      *ON
+     C                   SETON                                        5035
+     C*
+     C                   ELSE
+     C                   Z-ADD     CLICLS        CODIGO
+     C     CLATBL        CHAIN     TABCCLI                            44
+     C     *IN44         IFEQ      *ON
+     C                   SETON                                        3650
+     C                   ELSE
+     C                   MOVEL     TEXTO         CLSTXT
+      *
+     C     CLISEX        IFNE      '1'
+     C     CLISEX        ANDNE     '2'
+     C     CLISEX        ANDNE     '3'
+     C                   EXSR      SEXO
+     C                   ELSE
+     C     CLISEX        IFEQ      '1'
+     C                   MOVE      *BLANKS       SEXTXT
+     C                   MOVEL     'HOMBRE'      SEXTXT
+     C                   ELSE
+     C     CLISEX        IFEQ      '2'
+     C                   MOVE      *BLANKS       SEXTXT
+     C                   MOVEL     'MUJER'       SEXTXT
+     C                   ELSE
+     C                   MOVE      *BLANKS       SEXTXT
+     C                   MOVEL     'JURIDICO'    SEXTXT
+     C                   END
+     C                   END
+     C                   END
+      *
+     C                   END
+     C                   END
+     C*                    END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C*
+     C                   MOVE      CLITC2        CLADIV           15 0
+     C     CLADIV        CHAIN     AA2TDIV                            68
+     C  N68              MOVEL     DIVNOM        NOMDIV
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+      * Rutina a ejecutar si pulsan F4 en selección de claves
+      *
+     C     CONSU1        BEGSR
+      *
+     C     OPCION        IFEQ      1
+     C                   Z-ADD     CLICLA        CLIAUX            7 0
+     C                   END
+      *
+     C                   CLOSE     AA2MCLI
+     C                   CLOSE     AALMCLIF
+     C*                  CLOSE     AALMCPRO
+     C                   OPEN      AA2MCLI
+     C                   OPEN      AALMCLIF
+     C*                  OPEN      AALMCPRO
+     C                   CALL      'CONCLX'
+     C                   PARM                    CLICLA
+     C     CLICLA        CHAIN     AA2MCLI                            40
+      *
+     C     OPCION        IFEQ      1
+     C                   Z-ADD     CLIAUX        CLICLA
+     C                   END
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+      * Rutina a ejecutar si pulsan F4
+      *
+     C     CONSUL        BEGSR
+     C     CAMCUR        IFEQ      'CLICOR'
+     C                   CALL      'CODCOR2'
+     C                   PARM                    CLICOR
+     c                   endif
+      *
+     C     CAMCUR        IFEQ      'CLIASO'
+     C                   CALL      'CONCLX'
+     C                   PARM                    CLIASO
+     C     CLIASO        IFNE      0
+     C                   SETON                                        52
+     C                   END
+     C                   ELSE
+     C     CAMCUR        IFEQ      'CLIPAI'
+     C                   Z-ADD     0             CLPAUX           15 0
+     C                   MOVEL     *BLANKS       NOPAUX           27
+     C                   CALL      'CONPAI'
+     C                   PARM                    CLPAUX
+     C                   PARM                    NOPAUX
+     C     CLPAUX        IFNE      0
+     C                   SETON                                        54
+     C                   Z-ADD     CLPAUX        CLIPAI
+     C                   MOVEL     NOPAUX        CLIPOB
+     C                   ELSE
+     C                   SETON                                        53
+     C                   END
+     C                   ELSE
+      *
+     C     CAMCUR        IFEQ      'CLIGES'
+     C                   Z-ADD     0             CLGAUX           15 0
+     C                   MOVEL     *BLANKS       NOGAUX           40
+     C                   CALL      'CONRES'
+     C                   PARM                    CLGAUX
+     C                   PARM                    NOGAUX
+     C     CLGAUX        IFNE      0
+     C                   SETON                                        55
+     C                   Z-ADD     CLGAUX        CLIGES
+     C                   MOVEL     NOGAUX        GESNOM
+     C                   ELSE
+     C                   SETON                                        54
+     C                   END
+      *
+     C*                    Z-ADDCLIGES    CODIGO
+     C*                    MOVEL'CG'      TIPO
+     C*                    MOVEL'N'       CRE     1
+     C*                    MOVEL' '       RET     1
+     C*                    CALL 'CONTB1'
+     C*                    PARM           TIPO
+     C*                    PARM           CODIGO
+     C*                    PARM           CRE
+     C*                    PARM           RET
+     C*          RET       IFNE '*'
+     C*                    Z-ADDCODIGO    CLIGES
+     C*          CLATBL    CHAINTABLAS               44
+     C*                    MOVELTEXTO     GESNOM
+     C*                    SETON                     55
+     C*                    ELSE
+     C*                    SETON                     54
+     C*                    END
+      *
+     C                   ELSE
+      *
+     C     CAMCUR        IFEQ      'CLITC1'
+     C                   Z-ADD     0             CLTAUX           15 0
+     C                   MOVEL     *BLANKS       NOTAUX           40
+     C                   CALL      'CONTCL'
+     C                   PARM                    CLTAUX
+     C                   PARM                    NOTAUX
+     C     CLTAUX        IFNE      0
+     C                   SETON                                        56
+     C                   Z-ADD     CLTAUX        CLITC1
+     C                   MOVEL     NOTAUX        TICNOM
+     C                   ELSE
+     C                   SETON                                        55
+     C                   END
+     C                   ELSE
+     C     CAMCUR        IFEQ      'CLICLS'
+     C                   Z-ADD     CLICLS        CODIGO
+     C                   MOVEL     'N'           CRE               1
+     C                   MOVEL     ' '           RET               1
+     c                   close     tabccli
+     C                   CALL      'CONTABCC'
+     C                   PARM                    CODIGO
+     C                   PARM                    CRE
+     C                   PARM                    RET
+     c                   open      tabccli
+     C     RET           IFNE      '*'
+     C                   Z-ADD     CODIGO        CLICLS
+     C     CODIGO        CHAIN     TABCCLI                            44
+     C                   MOVEL     TEXTO         CLSTXT
+     C                   SETON                                        57
+     C                   ELSE
+     C                   SETON                                        56
+     C                   END
+     C                   ELSE
+     C*
+     C     CAMCUR        IFEQ      'CLIPOS1'
+     C                   SETOFF                                       66
+     C                   MOVEL     CLIPOS1       CODIGO
+     C                   MOVEL     'N'           CRE               1
+     C                   MOVEL     ' '           RET               1
+     C                   CLOSE     AA2COPO
+     C                   CALL      'COPOS1'
+     C                   PARM                    CODIGO
+     C                   PARM                    CRE
+     C                   PARM                    RET
+     C                   OPEN      AA2COPO
+     C     RET           IFNE      '*'
+     C                   MOVEL     CODIGO        CLIPOS1
+     C                   MOVEL     CODIGO        COPCOD
+     C                   MOVE      *BLANK        COPCO1
+     C     CLACOP        CHAIN     AA2COPO                            44
+     C   44              SETON                                        62
+     C                   MOVEL     COPNOM        CLIPRO
+     C                   ELSE
+     C                   SETON                                        66
+     C                   END
+     C                   ELSE
+     C*
+     C     CAMCUR        IFEQ      'CLIPOS2'
+     C                   MOVEL     'N'           CRE               1
+     C                   MOVEL     ' '           RET               1
+     C                   CLOSE     AA2COPO
+     C                   CALL      'COPOS3'
+     C                   PARM                    CLIPOS1
+     C                   PARM                    CLIPOS2
+     C                   PARM                    CLIPOS3
+     C                   PARM                    CRE
+     C                   PARM                    RET
+     C                   OPEN      AA2COPO
+     C     RET           IFNE      '*'
+     C                   MOVEL     CLIPOS1       COPCOD
+     C                   MOVEL     CLIPOS2       COPCO1
+     c                   MOVE      CLIPOS3       COPCO1
+     C     CLACOP        CHAIN     AA2COPO                            44
+     C                   SETON                                        53
+     C                   MOVEL     COPNOM        CLIPRO
+     C                   ELSE
+     C                   SETON                                        62
+     C                   END
+     C                   ELSE
+      *
+     C     CAMCUR        IFEQ      'CLISEX'
+     C  N12              EXSR      SEXO
+      *
+     C                   ELSE
+     C                   SETON                                        50
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+      * Rutina de selección de sexo.
+      *
+     C     SEXO          BEGSR
+      *
+     C                   MOVEL     *BLANKS       SEX
+     C                   EXFMT     WDW1
+     C     *IN12         DOWEQ     *OFF
+     C     SEX           IFNE      '1'
+     C     SEX           ANDNE     '2'
+     C     SEX           ANDNE     '3'
+     C                   SETON                                        3750
+     C                   EXFMT     WDW1
+     C                   ELSE
+     C                   MOVEL     SEX           CLISEX
+     C     SEX           IFEQ      '1'
+     C                   MOVE      *BLANKS       SEXTXT
+     C                   MOVEL     'HOMBRE'      SEXTXT
+     C                   ELSE
+     C     SEX           IFEQ      '2'
+     C                   MOVE      *BLANKS       SEXTXT
+     C                   MOVEL     'MUJER'       SEXTXT
+     C                   ELSE
+     C                   MOVE      *BLANKS       SEXTXT
+     C                   MOVEL     'JURIDICO'    SEXTXT
+     C                   END
+     C                   END
+     C                   SETON                                        129858
+     C                   END
+     C                   END
+     C   12
+     CANN98              SETON                                        375057
+     C                   SETOFF                                       1298
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+
+      * Rutina de confirmación de grabación.
+
+     C     CONFIR        BEGSR
+
+     C                   SETON                                          91
+     C     OPCION        IFEQ      3
+     C     *IN38         ANDEQ     *ON
+     C                   SETOFF                                           38
+     C                   SETON                                            89
+     C                   END
+
+     C                   EXFMT     FMT3
+
+     C     *IN03         IFEQ      *OFF
+     C     *IN12         ANDEQ     *OFF
+
+     C     OPCION        IFEQ      1
+     C                   MOVEL     EMP1          CLIEMP
+     C                   MOVEL     DEL1          CLIDEL
+     C                   MOVEL     USU2          CLIUSU
+     C                   Z-ADD     UDATE         FECH1
+     C                   Z-ADD     0             FECH2
+     C                   MOVE      'C'           MODO
+     C                   MOVE      'T'           FRM
+     C                   CALL      'FECHAS'
+     C                   PARM                    MODO
+     C                   PARM                    FRM
+     C                   PARM                    FECH1
+     C                   PARM                    FECH2
+     C                   PARM                    ERR
+     C                   PARM                    FEST
+     C                   Z-ADD     FECH2         CLIFEA
+     C                   MOVE      CLICLA        AUXBAN            7
+     C     CLITC1        IFEQ      2
+     C                   CALL      'CRECTA4'
+     C                   PARM                    CLICLA
+     C                   PARM                    CLITC1
+     C                   PARM                    CLINOM
+     C                   PARM                    CLIAPE
+     C                   PARM                    CLIAP2
+     C                   PARM                    CLISEX
+     C                   END
+
+     c                   movel     clinif        wcli             12
+     C                   WRITE     RCLI
+     C     CLITC1        IFNE      2
+     c                   exsr      crear
+     C                   END
+     C     CLITC1        IFEQ      50
+     c                   z-add     clicla        auxcli            7 0
+     C                   CALL      'CTLFO2PM'
+     C                   PARM                    CLICLA
+     C                   PARM                    CLITC2
+     c                   z-add     auxcli        clicla
+     C                   END
+      *
+     C                   EXSR      DIRECCION
+     C                   EXSR      BANCO
+     C                   EXSR      CUENTA
+     C                   EXSR      COMPLM
+     c                   exsr      emisores
+
+     C                   ELSE
+     C     OPCION        IFEQ      2
+     C                   MOVE      '*'           CLIREG
+     C                   Z-ADD     UDATE         FECH1
+     C                   Z-ADD     0             FECH2
+     C                   MOVE      'T'           MODO
+     C                   MOVE      'C'           FRM
+     C                   CALL      'FECHAS'
+     C                   PARM                    MODO
+     C                   PARM                    FRM
+     C                   PARM                    FECH1
+     C                   PARM                    FECH2
+     C                   PARM                    ERR
+     C                   PARM                    FEST
+     C                   Z-ADD     FECH2         CLIFEB
+     C   60              UPDATE    AA2MCLI0
+     c   60              movel     clinif        wcli
+     c   60              exsr      wcrear
+     C   61              UPDATE    RCLI
+     c   61              movel     clinif        wcli
+     c   61              exsr      wcrear
+     C                   SETOFF                                         6564
+      *
+     C                   ELSE
+      *
+     C     OPCION        IFEQ      3
+     C                   movel     clinif        wcli
+     C                   MOVE      CLICLA        AUXBAN            7
+     C     CLITC1        IFEQ      2
+     C                   CALL      'CRECTA4'
+     C                   PARM                    CLICLA
+     C                   PARM                    CLITC1
+     C                   PARM                    CLINOM
+     C                   PARM                    CLIAPE
+     C                   PARM                    CLIAP2
+     C                   PARM                    CLISEX
+     C                   END
+      *
+     C   60              movel     clinif        wcli
+     C   60              UPDATE    aa2mcli0
+     C   60              exsr      wcrear
+     c   61              movel     clinif        wcli
+     C   61              UPDATE    RCLI
+     C   61              exsr      wcrear
+     C                   SETOFF                                       89
+     C                   EXSR      DIRECCION
+     C                   EXSR      BANCO
+     C                   EXSR      CUENTA
+     C                   EXSR      COMPLM
+     C                   EXSR      emisores
+      *
+     C     OPCION        IFEQ      4
+     C                   MOVE      CLICLA        AUXBAN            7
+     C                   EXSR      DIRECCION
+     C                   EXSR      BANCO
+     C                   EXSR      CUENTA
+     C                   EXSR      COMPLM
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   SETON                                        99
+     C                   END
+     C                   SETOFF                                       9112
+      *
+     C                   ENDSR
+      *
+     C     LIMPIA        BEGSR
+      *
+     C                   MOVEL     *BLANK        CLINOM
+     C                   MOVEL     *BLANK        CLIAPE
+     C                   MOVEL     *BLANK        CLIAP2
+     C                   MOVEL     *BLANK        CLICAL
+     C                   MOVEL     *BLANK        CLIDI1
+     C                   MOVEL     *BLANK        CLIDI2
+     C                   MOVEL     *BLANK        CLIPOS
+     C                   MOVEL     *BLANK        CLIPRO
+      *----------------------------------------------------------------
+      * Modificación exclusiva para COSTA RICA. (484 = VENEZUELA)
+      * Aquí es donde se pone el país que ha de aparecer por defecto
+      *
+     C                   Z-ADD     484           CLIPAI
+      *----------------------------------------------------------------
+     C                   Z-ADD     CLIPAI        CLPAUX
+     C     CLPAUX        CHAIN     AA2TPAIS                           41
+     C                   MOVEL     PAINOM        CLIPOB
+     C                   MOVEL     *BLANK        CLICAL
+     C                   Z-ADD     0             CLINUM
+     C                   Z-ADD     0             FECNAC
+     C                   Z-ADD     0             CLITEL
+     C                   Z-ADD     0             CLITE2
+     C                   Z-ADD     0             CLITE3
+     C                   MOVEL     *BLANK        CLIFAX
+     C                   MOVEL     *BLANK        CLIFA2
+     C                   MOVEL     *BLANK        CLIFA3
+     C                   MOVEL     *BLANK        CLITID
+     C                   Z-ADD     0             CLITC1
+     C                   Z-ADD     0             CLINAC
+     C                   Z-ADD     0             CLIRES
+     C                   MOVEL     *BLANK        CLITCO
+     C                   MOVEL     *BLANKS       CLISEX
+     C                   MOVEL     *BLANK        CLIMEF
+     C                   Z-ADD     0             CLIESC
+     C                   Z-ADD     CLICLA        CLIASO
+     C                   MOVEL     *BLANK        CLIPAS
+     C                   MOVEL     *BLANK        CLIGID
+     C                   Z-ADD     0             CLIGES
+     C                   Z-ADD     0             CLICLS
+     C                   Z-ADD     0             CLIGRU
+     C                   Z-ADD     0             CLITC2
+     C                   MOVEL     *BLANK        NOMDIV
+     C                   MOVEL     *BLANK        CLICRE
+     C                   MOVEL     *BLANK        CLSTXT
+     C                   MOVEL     *BLANK        CLIOCU
+     C                   MOVEL     *BLANK        CLIOBS
+     C                   MOVEL     *BLANK        CLIUSU
+     C                   MOVE      *DATE         CLIFFF            6 0
+      *
+     C                   Z-ADD     CLIFFF        FECH1
+     C                   Z-ADD     0             FECH2
+     C                   MOVE      'C'           MODO              1
+     C                   MOVE      'T'           FRM               1
+     C                   MOVE      *BLANKS       ERR               1
+     C                   MOVE      '0'           FEST              1
+     C                   CALL      'FECHAS'
+     C                   PARM                    MODO
+     C                   PARM                    FRM
+     C                   PARM                    FECH1
+     C                   PARM                    FECH2
+     C                   PARM                    ERR
+     C                   PARM                    FEST
+     C                   Z-ADD     FECH2         CLIFEA
+      *
+     C                   Z-ADD     0             CLIFEB
+     C                   MOVEL     *BLANK        CLIREG
+     C                   MOVEL     *BLANK        CLIEXC
+     C                   MOVEL     *BLANK        CLIORD
+     C                   MOVEL     *BLANK        CLIDPR
+     C                   Z-ADD     0             CLICOR
+     C                   MOVE      *BLANKS       CLISEX
+     C                   MOVEL     *BLANK        CLIDPD
+     C                   MOVEL     *BLANK        SEXTXT
+     C                   MOVEL     *BLANK        GESNOM
+     C                   MOVEL     *BLANK        TICNOM
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+      *----------------------------------------------------------------
+      *
+     C     COMPLM        BEGSR
+      *
+     C                   MOVEL     'N'           SEL
+     C                   EXFMT     WDW2
+     C     *IN03         DOWEQ     *OFF
+     C     SEL           IFEQ      'S'
+     C                   MOVE      CLICLA        CLICLP            7
+     C                   CALL      'CLICO1'
+     C                   PARM                    CLICLP
+     C                   SETON                                        03
+     C                   ELSE
+     C                   SETON                                        03
+     C                   END
+     C  N03              EXFMT     WDW2
+     C                   END
+     C   03              SETOFF                                       03
+
+     C                   ENDSR
+
+      *---------------------------------------------------------------------
+
+     C     DIRECCION     BEGSR
+
+     C                   MOVE      *BLANKS       AUXDIR           12
+     C                   MOVE      CLINIF        AUXDIR           12
+     C                   MOVEL     'N'           SEL
+     C                   EXFMT     WDW5
+     C     *IN03         DOWEQ     *OFF
+     C     SEL           IFEQ      'S'
+     C                   CALL      'DIRECC'
+     C                   PARM                    AUXDIR
+     C                   SETON                                        03
+     C                   ELSE
+     C                   SETON                                        03
+     C                   END
+     C  N03              EXFMT     WDW5
+     C                   END
+     C   03              SETOFF                                       03
+
+     C                   ENDSR
+
+      *---------------------------------------------------------------------
+
+     C     BANCO         BEGSR
+      *
+     C                   MOVEL     'N'           SEL
+     C                   EXFMT     WDW3
+     C     *IN03         DOWEQ     *OFF
+     C     SEL           IFEQ      'S'
+     C                   CALL      'CLIBP1'
+     C                   PARM                    AUXBAN
+     C                   SETON                                        03
+     C                   ELSE
+     C                   SETON                                        03
+     C                   END
+     C  N03              EXFMT     WDW3
+     C                   END
+     C   03              SETOFF                                       03
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+     C     CUENTA        BEGSR
+      *
+     C                   MOVEL     'N'           SEL
+     C                   EXFMT     WDW4
+     C     *IN03         DOWEQ     *OFF
+     C     SEL           IFEQ      'S'
+     C                   CALL      'CRECTB'
+     C                   PARM                    AUXBAN
+     C                   SETON                                        03
+     C                   ELSE
+     C                   SETON                                        03
+     C                   END
+     C  N03              EXFMT     WDW4
+     C                   END
+     C   03              SETOFF                                       03
+      *
+     C                   ENDSR
+      *
+      *----------------------------------------------------------------
+      *
+     C     SALIR1        BEGSR
+     C                   SETOFF                                           91
+     C                   ENDSR
+     C*
+     C     SALIR         BEGSR
+     C                   SETON                                          8788
+     C                   ENDSR
+     C*
+     C     SALI2         BEGSR
+     C                   SETON                                            87
+     C                   ENDSR
+     C*
+     C     FECHA1        BEGSR
+     C*
+     C                   Z-ADD     0             FECH1
+     C                   Z-ADD     CLIANA        FECH2
+     C                   MOVE      'C'           MODO              1
+     C                   MOVE      'T'           FRM               1
+     C                   MOVE      *BLANKS       ERR               1
+     C                   MOVE      '0'           FEST              1
+     C                   CALL      'FECHAS'
+     C                   PARM                    MODO
+     C                   PARM                    FRM
+     C                   PARM                    FECH1
+     C                   PARM                    FECH2
+     C                   PARM                    ERR
+     C                   PARM                    FEST
+     C                   Z-ADD     FECH1         FECNAC
+     C*
+     C                   ENDSR
+     C**********************************
+     C* comprobacion de cuentas
+     C     crear         begsr
+     C
+     C                   z-add     clicla        m1
+     C                   z-add     *zeros        m2
+     C                   z-add     m3            ctacte
+     C     ccor          setll     aa2mcor1
+     C                   read      aa2mcor1                               77
+     C     wcli          chain     aalmclif                           99
+     C                   move      'E'           clireg
+     C                   UPDATE    rcli
+     C                   MOVE      CLICLA        CLITXT            7
+     C                   close     aa2mcli
+     C                   CALL      'CRECTA7'
+     C                   PARM                    emp1
+     C                   PARM                    del1
+     C                   parm                    clitxt
+     C                   open      aa2mcli
+     C     CLICLA        CHAIN     AA2MCLI                            31
+     c     crear9        tag
+     c                   endsr
+      *---------------------------------------------------------------------
+     C     wcrear        begsr
+     C     CLITC1        IFNE      2
+     C                   exsr      crear
+     C                   endif
+     C                   endsr
+      *---------------------------------------------------------------------
+
+     c     emisores      begsr
+     c     wclitc1       ifne      50
+     c                   goto      emisores9
+     c                   endif
+     c                   move      'S'           sel1
+     C                   EXFMT     WDW6
+     c     *in03         ifeq      '1'
+     c                   goto      emisores9
+     c                   endif
+     c     sel1          ifeq      'N'
+     c                   goto      emisores9
+     c                   endif
+     c                   z-add     *zeros        clemi            15 0
+     c     clemi         setll     aa2emiso
+     c     emisores1     tag
+     c                   read      aa2emiso                               78
+     c     *in78         ifeq      '1'
+     c                   goto      emisores9
+     c                   endif
+     c                   z-add     emicla        wcla              7 0
+     c     wcla          chain     aa2mcli                            79
+     c     *in79         ifeq      '1'
+     c                   goto      emisores1
+     c                   endif
+     C                   CALL      'CRECTA6'
+     C                   PARM                    CLICLA
+     C                   PARM                    CLITC1
+     C                   PARM                    CLINOM
+     C                   PARM                    CLIAPE
+     C                   PARM                    CLIAP2
+     C                   PARM                    CLISEX
+     c                   goto      emisores1
+     c     emisores9     tag
+     c                   z-add     *zeros        clicla
+     C   03              SETOFF                                       03
+     c                   endsr

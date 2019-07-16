@@ -1,0 +1,63 @@
+      *
+     FTIPOSFID  UF A E           K DISK
+     FCRETIPFM  CF   E             WORKSTN
+      *
+     C     *ENTRY        PLIST
+     C                   PARM                    CRE               1
+      *
+     C                   MOVE      '0'           RET               1
+      *
+     C     CRE           IFEQ      'S'
+     C                   SETON                                        50
+     C                   END
+      *
+     C                   EXFMT     FMT1
+     C     *IN03         DOWEQ     *OFF
+      *
+     C     *IN04         IFEQ      *ON
+     C                   CALL      'CONTFID'
+     C                   PARM                    FIDTIP
+     C                   PARM                    FIDTXT
+     C                   PARM                    CRE
+     C                   PARM                    RET
+     C                   END
+      *
+     C     RET           IFEQ      '0'
+      *
+     C     FIDTIP        IFEQ      0
+     C                   SETON                                        26
+     C                   ELSE
+      *
+     C                   SETON                                        53
+     C     FIDTIP        CHAIN     TIPOSFID                           40
+     C                   EXFMT     FMT1
+     C     *IN12         DOWEQ     *OFF
+     C     *IN03         ANDEQ     *OFF
+     C     FIDTXT        IFEQ      *BLANKS
+     C                   SETON                                        25
+     C                   ELSE
+     C   40              WRITE     RTIPFI
+     C  N40              UPDATE    RTIPFI
+     C                   Z-ADD     0             FIDTIP
+     C                   SETON                                        12
+     C                   END
+      *
+     C  N12              EXFMT     FMT1
+     C                   SETOFF                                       25
+     C                   END
+      *
+     C                   END
+      *
+     C                   ELSE
+     C                   Z-ADD     0             FIDTIP
+     C                   MOVE      '0'           RET
+     C                   END
+      *
+     C                   MOVE      *BLANKS       FIDTXT
+     C                   SETOFF                                       53
+     C  N03              EXFMT     FMT1
+     C                   SETOFF                                       2627
+     C                   END
+      *
+     C                   SETON                                        LR
+      *

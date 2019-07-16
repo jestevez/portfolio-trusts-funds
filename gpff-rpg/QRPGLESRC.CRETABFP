@@ -1,0 +1,154 @@
+      *
+     FTABFP     UF A E           K DISK
+     FCRETFPFM  CF   E             WORKSTN
+      *
+     C     *ENTRY        PLIST
+     C                   PARM                    CRE               1
+      *
+     C                   MOVE      '0'           RET               1
+      *
+     C     CRE           IFEQ      'S'
+     C                   SETON                                        50
+     C                   END
+      *
+     C                   SETON                                        59
+      *
+     C                   EXFMT     FMT1
+     C     *IN03         DOWEQ     *OFF
+      *
+     C     *IN04         IFEQ      *ON
+     C                   CALL      'CONTABFP'
+     C                   PARM                    CODIGO
+     C                   PARM                    CRE
+     C                   PARM                    RET
+     C                   END
+     C     *IN21         IFEQ      *ON
+     c                   close     tabfp
+     C                   CALL      'CLLST4'
+     c                   open      tabfp
+     C                   MOVE      '1'           RET
+     C                   END
+      *
+     C     RET           IFEQ      '0'
+      *
+     C     CODIGO        IFEQ      0
+     C                   SETON                                        26
+     C                   ELSE
+      *
+     C                   SETON                                        53
+     C     CODIGO        CHAIN     TABFP                              40
+     C     *IN40         IFEQ      '1'
+     C                   MOVE      *BLANK        CUENTA
+     C                   Z-ADD     0             CDCNX
+     C                   ENDIF
+     C                   EXFMT     FMT1
+     C     *IN12         DOWEQ     *OFF
+     C     *IN03         ANDEQ     *OFF
+     C     *IN04         IFEQ      *ON
+     C     CAMCUR        ANDEQ     'CDCNX'
+     C                   EXFMT     WDW1
+     C     *IN12         IFEQ      *OFF
+     C     CD0           IFEQ      'X'
+     C                   Z-ADD     0             CDCNX
+     C                   ELSE
+     C     CD1           IFEQ      'X'
+     C                   Z-ADD     1             CDCNX
+     C                   ELSE
+     C     CD2           IFEQ      'X'
+     C                   Z-ADD     2             CDCNX
+     C                   ELSE
+     C     CD3           IFEQ      'X'
+     C                   Z-ADD     3             CDCNX
+     C                   ELSE
+     C     CD4           IFEQ      'X'
+     C                   Z-ADD     50            CDCNX
+     C                   ELSE
+     C     CD5           IFEQ      'X'
+     C                   Z-ADD     99            CDCNX
+     C                   ELSE
+     C     CD6           IFEQ      'X'
+     C                   Z-ADD     4             CDCNX
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C   12              Z-ADD     0             CDCNX
+     C                   SETOFF                                       1204
+     C                   ELSE
+     C     *IN04         IFEQ      *ON
+     C     CAMCUR        ANDEQ     'CUENTA'
+     C                   EXFMT     WDW2
+     C     *IN12         IFEQ      *OFF
+     C     TC0           IFEQ      'X'
+     C                   MOVE      'A'           CUENTA
+     C                   ELSE
+     C     TC1           IFEQ      'X'
+     C                   MOVE      'C'           CUENTA
+     C                   ELSE
+     C     TC2           IFEQ      'X'
+     C                   MOVE      'E'           CUENTA
+     C                   ELSE
+     C     TC3           IFEQ      'X'
+     C                   MOVE      'D'           CUENTA
+     C                   ELSE
+     C     TC4           IFEQ      'X'
+     C                   MOVE      'F'           CUENTA
+     C                   ELSE
+     C     TC5           IFEQ      'X'
+     C                   MOVE      'I'           CUENTA
+     C                   ELSE
+     C     TC6           IFEQ      'X'
+     C                   MOVE      'T'           CUENTA
+     C                   ELSE
+     C     TC7           IFEQ      'X'
+     C                   MOVE      ' '           CUENTA
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C   12              MOVE      ' '           CUENTA
+     C                   SETOFF                                       1204
+     C                   END
+     C                   END
+     C     TEXTO         IFEQ      *BLANKS
+     C                   SETON                                        25
+     C                   ELSE
+     C*          CDCNX     IFEQ 0
+LLLL C*                    SETON                     2627
+     C*                    ELSE
+     C   40              WRITE     RTABFP
+     C  N40              UPDATE    RTABFP
+     C                   Z-ADD     0             CODIGO
+     C                   SETON                                        12
+     C*                    END
+     C                   END
+      *
+     C  N12              EXFMT     FMT1
+LLLL C                   SETOFF                                       252627
+     C                   END
+      *
+     C                   END
+     C*                    END
+      *
+     C                   ELSE
+     C                   Z-ADD     0             CODIGO
+     C                   MOVE      '0'           RET
+     C                   END
+      *
+     C                   MOVE      *BLANKS       TEXTO
+     C                   SETOFF                                       53
+     C  N03              EXFMT     FMT1
+     C                   SETOFF                                       2627
+     C                   END
+      *
+     C                   SETON                                        LR
+      *

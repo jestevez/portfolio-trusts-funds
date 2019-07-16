@@ -1,0 +1,8 @@
+= See error messages
+WRKMSGF MSGF(*ALL)
+
+= Green screen command
+Opc  Mensajes    Biblioteca
+ 5   QCGMSG      QPDA 
+
+

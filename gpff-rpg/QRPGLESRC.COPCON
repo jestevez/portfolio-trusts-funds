@@ -1,0 +1,222 @@
+
+     H DATEDIT(*DMY)
+
+      *---------------------------------------------------------------------
+
+     FAA2CTA    IF A E           K DISK
+     FVALORA    IF A E           K DISK
+     FAA2COOPE  IF A E           K DISK
+     FAA2BALSS  IF A E           K DISK
+     FAA2BALSI  IF A E           K DISK
+     FAA2BALXI  IF A E           K DISK    RENAME(AA2BALS0:VLOORAX)
+     FAA2TPRCL  IF A E           K DISK
+     FAA2TDPTO  IF A E           K DISK
+     FAA2TFIS   IF A E           K DISK
+     FAA2MTAB   IF A E           K DISK
+     FAA2TGRU   IF A E           K DISK
+     FAA2TTPRO  IF A E           K DISK
+     FPERFIL    IF   E           K DISK
+     FPERFIL2   O    E           K DISK
+
+      *---------------------------------------------------------------------
+
+     D LDA            UDS
+     D  FIDEIC               254    257
+     D  USUARI               258    267
+
+     D                 DS
+     D  EMPEMP                 1      2
+     D  DELDEL                 3      4
+     D  NEWCOD                 1      4
+
+     D                 DS
+     D  EMPEM1                 1      2
+     D  DELDE1                 3      4
+     D  OLDCOD                 1      4
+
+      *---------------------------------------------------------------------
+
+     C     BUSTAB        KLIST
+     C                   KFLD                    EMP1              2
+     C                   KFLD                    DEL1              2
+
+      *---------------------------------------------------------------------
+
+     C     *ENTRY        PLIST
+     C                   PARM                    COD               4
+     C                   PARM                    CODDIV            3 0
+     C                   MOVE      COD           NEWCOD
+
+     C     *DTAARA       DEFINE    *LDA          LDA
+     C                   IN        LDA
+
+     C                   MOVE      FIDEIC        OLDCOD
+
+     C     CODDIV        IFEQ      999
+     C                   SETON                                        99
+     C                   END
+
+     C                   MOVEL     OLDCOD        EMP1
+     C                   MOVE      OLDCOD        DEL1
+
+      * Copia cuentas generales
+
+     C     BUSTAB        SETLL     AA2CTA
+     C                   READ      AA2CTA                                 31
+     C     *IN31         DOWEQ     *OFF
+     C     CTACTE        IFEQ      0
+     C                   MOVEL     NEWCOD        CTAEMP
+     C                   MOVE      NEWCOD        CTADEL
+     C     *IN99         IFEQ      *OFF
+     C     CTADIV        IFEQ      CODDIV
+     C                   WRITE     AA2CTA0
+     C                   END
+     C                   ELSE
+     C                   WRITE     AA2CTA0
+     C                   END
+     C                   END
+     C     BUSTAB        READE     AA2CTA                                 31
+     C                   END
+
+      * Copia valores
+
+     C     BUSTAB        SETLL     VALORA
+     C                   READ      VALORA                                 31
+     C     VLOEMP        IFNE      EMP1
+     C     VLODEL        ANDNE     DEL1
+     C                   SETON                                            31
+     C                   END
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        VLOEMP
+     C                   MOVE      NEWCOD        VLODEL
+     C     VLOCLS        IFNE      'I'
+     C                   WRITE     VLOORA1
+     C                   END
+     C     BUSTAB        READE     VALORA                                 31
+     C                   END
+
+      * Copia codigos de operacion
+
+     C     BUSTAB        SETLL     AA2COOPE
+     C                   READ      AA2COOPE                               31
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        COPEMP
+     C                   MOVE      NEWCOD        COPDEL
+     C                   WRITE     COOPE1
+     C     BUSTAB        READE     AA2COOPE                               31
+     C                   END
+
+      * Copia Balances
+
+     C     BUSTAB        SETLL     AA2BALSI
+     C                   READ      AA2BALSI                               31
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        BSIEMP
+     C                   MOVE      NEWCOD        BSIDEL
+     C                   WRITE     AA2BALS0
+     C     BUSTAB        READE     AA2BALSI                               31
+     C                   END
+
+      * Copia Balances SUPERINTENDENCIA
+
+     C     BUSTAB        SETLL     AA2BALSS
+     C                   READ      AA2BALSS                               31
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        BSIEMP
+     C                   MOVE      NEWCOD        BSIDEL
+     C                   WRITE     AA2BASS
+     C     BUSTAB        READE     AA2BALSS                               31
+     C                   END
+
+      * Copia Balances II
+
+     C     BUSTAB        SETLL     AA2BALXI
+     C                   READ      AA2BALXI                               31
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        BSIEMP
+     C                   MOVE      NEWCOD        BSIDEL
+     C                   WRITE     VLOORAX
+     C     BUSTAB        READE     AA2BALXI                               31
+     C                   END
+
+      * Copia Relaciones Producto/Cliente
+
+     C     BUSTAB        SETLL     AA2TPRCL
+     C                   READ      AA2TPRCL                               31
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        PCLEMP
+     C                   MOVE      NEWCOD        PCLDEL
+     C                   WRITE     AA2TPRC0
+     C     BUSTAB        READE     AA2TPRCL                               31
+     C                   END
+
+      * Copia Departamentos
+
+     C     BUSTAB        SETLL     AA2TDPTO
+     C                   READ      AA2TDPTO                               31
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        DEPEMP
+     C                   MOVE      NEWCOD        DEPDEL
+     C                   WRITE     AA2TDPT0
+     C     BUSTAB        READE     AA2TDPTO                               31
+     C                   END
+
+      * Copia Grupos de Valores
+
+     C     BUSTAB        SETLL     AA2TGRU
+     C                   READ      AA2TGRU                                31
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        GRUEMP
+     C                   MOVE      NEWCOD        GRUDEL
+     C                   WRITE     TGRU1
+     C     BUSTAB        READE     AA2TGRU                                31
+     C                   END
+
+      * Copia Productos
+
+     C     BUSTAB        SETLL     AA2TTPRO
+     C                   READ      AA2TTPRO                               31
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        PROEMP
+     C                   MOVE      NEWCOD        PRODEL
+     C                   WRITE     AA2TPRO0
+     C     BUSTAB        READE     AA2TTPRO                               31
+     C                   END
+
+      * Copia Descripcion de Fideicomiso
+
+     C     BUSTAB        CHAIN     AA2MTAB                            31
+     C     *IN31         IFEQ      *OFF
+     C                   MOVEL     NEWCOD        TABEMP
+     C                   MOVE      NEWCOD        TABDEL
+     C                   MOVEL     OLDCOD        TABORI
+     C                   MOVEL     USUARI        TABUSU
+     C                   Z-ADD     UDATE         MARIO             6 0
+     C                   Z-ADD     MARIO         TABFEA
+     C                   WRITE     AA2MTAB0
+     C                   END
+
+      * Copia tablas Fiscales
+
+     C     BUSTAB        SETLL     AA2TFIS
+     C                   READ      AA2TFIS                                31
+     C     *IN31         DOWEQ     *OFF
+     C                   MOVEL     NEWCOD        FISEMP
+     C                   MOVE      NEWCOD        FISDEL
+     C                   WRITE     TFIS1
+     C     BUSTAB        READE     AA2TFIS                                31
+     C                   END
+
+      * SEGURIDAD
+
+     C                   MOVE      *BLANKS       PRFPRF
+     C     PRFPRF        SETLL     PERFIL
+     C                   READ      PERFIL                                 40
+     C     *IN40         DOWEQ     *OFF
+     C                   MOVE      NEWCOD        PRFARE
+     C                   WRITE     RPRF2
+     C                   READ      PERFIL                                 40
+     C                   END
+
+     C                   SETON                                        LR
+

@@ -1,0 +1,9 @@
+     A          R CARF
+     A            USUARF        10          COLHDG('USUARIO')
+     A            TIPO           2  0       COLHDG('TIPO FID.')
+     A            FECGRA         8  0       COLHDG('FECHA GRABACION')
+     A            PANTAL        10          COLHDG('PANTALLA')
+     A            HORA           6  0       COLHDG('HORA')
+     A            USARI         10          COLHDG('USUARIO GRA.')
+     A          K USUARF
+     A          K TIPO

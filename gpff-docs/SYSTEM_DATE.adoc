@@ -1,0 +1,3 @@
+= Get system date
+
+ WRKSYSVAL SYSVAL(QDATE)

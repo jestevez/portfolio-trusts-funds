@@ -1,0 +1,1222 @@
+     H DECEDIT('0,') DATEDIT(*DMY.)
+     F*
+     FFCTLCON   IF   E           K DISK
+     FGASGES    IF   E           K DISK
+     Fcuentas   IF   E           K DISK
+     Faa2ieso   IF   E           K DISK
+     FAA2part1  iF   E           K DISK
+     F                                     RENAME(aa2apar:aa2apar1)
+     FAA2part   uF a E           K DISK
+     FAA2fec    IF   E           K DISK
+     FAA2TFIDE  IF   E           K DISK
+     FAA2MCLI   IF   E           K DISK
+     FCONTRATO  IF   E           K DISK
+     F*CMSTL0   IF   E           K DISK
+     FAA2CAB    IF   E           K DISK
+     FLCONTRAT  uF   E           K DISK
+     F                                     RENAME(RCONT:RCONT1)
+     FTABCCLI   IF   E           K DISK
+     FAALMCLIF  IF   E           K DISK
+     F                                     RENAME(AA2MCLI0:AA2MCLI1)
+     FTABTR     IF   E           K DISK
+     FTABTC     IF   E           K DISK
+     FTABFP     IF   E           K DISK
+     FAA2TDIV   IF   E           K DISK
+     FTIPOSFID  IF   E           K DISK
+     FDATFIDE   UF   E           K DISK
+     FOPEFIDES  O  A E           K DISK
+     FMOVFID    O  A E           K DISK
+     F*NTRLCNT  IF   E           K disk
+     FRETFIDFM  CF   E             WORKSTN
+     D*
+     D LDA            UDS
+     D  EMP1                 254    255
+     D  DEL1                 256    257
+     D  WSCLAV               254    257
+     D  USU1                 258    267
+     D  pant                 268    277
+     D*
+     D                 DS
+     D  CTAX                   1     20
+     D  CTAX1                  1      2
+     D*
+     D                 DS
+     D  CTAX2                  1     20
+     D  CTAX3                 19     20
+     D*
+     D                 DS
+     D  CTAX4                  1     20
+     D  CTAX5                  1      2
+     D*
+     DARREGLO          S              1    DIM(20)
+     DARREGLA          S              1    DIM(20)
+     C*
+     C     *DTAARA       DEFINE    *LDA          LDA
+     C                   IN        LDA
+     C*
+     C* Cuentas
+     C*
+     C     CLACTA        KLIST
+     C                   KFLD                    CLICLAC
+     C                   KFLD                    cta              20
+     C*
+     C* Fideicomitentes Participantes - AA2PART
+     C*
+     C     CLAPAR1       KLIST
+     C                   KFLD                    EMP1
+     C                   KFLD                    DEL1
+     C     CLAPAR        KLIST
+     C                   KFLD                    EMP1
+     C                   KFLD                    DEL1
+     c                   kfld                    fiesp
+     C*
+     C* Contrato
+     C*
+     C     CLAVE2        KLIST
+     C                   KFLD                    EMP1
+     C                   KFLD                    DEL1
+     C                   KFLD                    APOTCN
+     C                   KFLD                    APOCON
+     C                   KFLD                    AUXDAT
+     C*
+     C     CLAVE5        KLIST
+     C                   KFLD                    EMP1
+     C                   KFLD                    DEL1
+ZZZ  C                   KFLD                    AUXDAT
+     C*
+     C* Contrato Activado
+     C*
+     C     CLAVE4        KLIST
+     C                   KFLD                    EMP1
+     C                   KFLD                    DEL1
+     C*
+     C* Preparacion datos pantalla
+     C*
+     C                   CLOSE     DATFIDE
+     C                   CLOSE     CONTRATO
+     C                   CLOSE     LCONTRAT
+     C                   MOVE      'FIDCO'       SIST
+     C                   MOVE      UDATE         FECOPE
+     C                   MOVE      UDATE         FECVAL
+     C     UDATE         CHAIN     AA2FEC                             78
+     C                   Z-ADD     FECAMD        FECDIA            8 0
+     C                   CALL      'ULTOPE'
+     C                   PARM                    NUAPO
+     C                   MOVE      WSCLAV        TOT              15
+     c                   z-add     *zeros        ind81             1 0
+     C*
+     C     clapar1       CHAIN     aa2part1                           81
+     c   81              z-add     1             ind81
+     C*
+     C     TOT           CHAIN     AA2TFIDE                           41
+     C     FIDTIP        CHAIN     TIPOSFID                           42
+     C                   OPEN      DATFIDE
+     C     CLAVE4        CHAIN     DATFIDE                            43
+HOY  C                   Z-ADD     DATCLI        AUXDAT            7 0
+     C                   CLOSE     DATFIDE
+     C*
+     C* Fideicomitente
+     C*
+     C     DATFID        CHAIN     AA2MCLI                            41
+     C     *IN41         IFEQ      *OFF
+     c                   MOVE      CLINIF        CLINIX
+     C                   MOVEL     *BLANKS       NOMBRE
+     C     CLISEX        IFEQ      '3'
+     C                   MOVEL     '*'           NOMBRE
+     C                   END
+     C                   CALL      'COMPNOM'
+     C                   PARM                    CLINOM
+     C                   PARM                    CLIAPE
+     C                   PARM                    CLIAP2
+     C                   PARM                    NOMBRE           50
+     C  N81              MOVE      CLINIX        FIESP
+     C  N81              MOVE      CLINIX        FIESPC           12
+     C  N81              MOVEL     NOMBRE        NFIESP
+     C
+     C     CLICLS        CHAIN     TABCCLI                            43
+     C  N43              MOVEL     TEXTO         CLASE
+     C  N43              Z-ADD     CLICLS        CLICLSF           2 0
+     C*
+     C                   ENDIF
+     C*
+     C* Fideicomiso
+     C*
+     C     DATCLI        CHAIN     AA2MCLI                            41
+     C*
+     C                   MOVE      'N'           RETDPV
+     C                   Z-ADD     DATMTA        MTATRA           19 2
+     C                   Z-ADD     DATMNT        MNTTRA           19 2
+      *
+     C                   OPEN      LCONTRAT
+     C     CLAVE5        CHAIN     LCONTRAT                           40
+     c                   z-add     ctnfmt        apotcn
+     c                   z-add     nucont        apocon
+     c                   z-add     comret        apoprc
+     c                   z-add     icoret        apocom
+     c                   z-add     frmpa         retfpg
+     C                   Z-ADD     DATFID        CLICLAC           7 0
+     C                   CLOSE     LCONTRAT
+     C*
+     C* Tipo Contrato
+     C*
+     C     APOTCN        CHAIN     TABTC                              41
+     C                   MOVEL     TEXTO         TIPCON
+     C*
+     C     RETFPG        CHAIN     TABFP                              88
+     C                   MOVE      TEXTO         RETPAG
+     C*
+     C     RETFPG        IFLT      4
+     C                   EXSR      BUSCTA
+     C                   ENDIF
+      *
+     C     RETFPG        IFEQ      5
+     C     RETFPG        OREQ      6
+     C     RETFPG        OREQ      9
+     C                   EXSR      CTACAB
+     C                   ENDIF
+     C*
+     C* Validacion y Conversion Cuenta
+     C*
+     C     OPECTA        IFNE      *BLANKS
+     C                   EXSR      VALCTA
+     C     *IN35         IFEQ      '0'
+     C*                  MOVE      CTA20         OPECTA
+     C                   ELSE
+     C                   SETOFF                                       6535
+     C                   ENDIF
+     C                   ENDIF
+     C*
+     C                   Z-ADD     CLICLSF       CLICLS
+     C*
+     C     *IN03         DOWEQ     '0'
+     C*
+     C                   EXFMT     FMT2
+      *
+     C                   SETOFF                                       2331
+     C                   SETOFF                                       262728
+     C                   SETOFF                                       323436
+     C                   SETOFF                                       333538
+     C                   SETOFF                                       415456
+     C                   SETOFF                                       454852
+     C                   SETOFF                                       646986
+     C                   SETOFF                                       7167
+     C                   SETOFF                                       838489
+      *
+     C     *IN03         IFEQ      '0'
+     C     *IN04         CASEQ     '1'           SOLI2
+     C     *IN11         CASEQ     '1'           CAMBIO
+     C                   CAS                     PROCE2
+     C                   END
+     C                   END
+     C                   END
+     C*
+     C                   MOVE      *ON           *INLR                    LR
+     C*
+     C* Valida Primera Pantalla
+     C*
+     C     PROCE2        BEGSR
+     C*
+     C     *IN35         IFEQ      *OFF
+     C                   EXSR      VALIFEC
+     C                   ENDIF
+     C*
+     C* Contrato
+     C*
+     C     *IN35         IFEQ      '0'
+     C                   OPEN      LCONTRAT
+     C     CLAVE5        CHAIN     LCONTRAT                           40
+     C   40              SETON                                        3571
+     C                   CLOSE     LCONTRAT
+     C                   END
+     C*
+     C* Fideicomitente
+     C*
+     C     *IN81         IFEQ      '0'
+     C                   SETOFF                                       60
+     C                   MOVE      *BLANKS       NFIESP
+     C*
+     C     FIESP         IFNE      FIESPC
+     C                   MOVE      *BLANKS       OPECTA
+     C                   MOVEL     FIESP         FIESPC
+     C                   ENDIF
+     C*
+     C     FIESP         CHAIN     AALMCLIF                           86
+     C     *IN86         IFEQ      '1'
+     C                   SETON                                        35
+     C                   ELSE
+     C                   SETON                                        60
+     C                   MOVEL     *BLANKS       NOMBRE
+     C     CLISEX        IFEQ      '3'
+     C                   MOVEL     '*'           NOMBRE
+     C                   END
+     C                   CALL      'COMPNOM'
+     C                   PARM                    CLINOM
+     C                   PARM                    CLIAPE
+     C                   PARM                    CLIAP2
+     C                   PARM                    NOMBRE           50
+     C                   MOVEL     NOMBRE        NFIESP
+     C*
+     C     clapar        CHAIN     aa2part                            83
+     c   83              seton                                        35
+     C                   END
+     C                   ENDIF
+     C*
+     C     FIESP         IFEQ      *BLANKS
+     C                   Z-ADD     DATFID        CLICLAC
+     C*
+     C                   ELSE
+     C*
+     C                   Z-ADD     CLICLA        CLICLAC
+     C*
+     C     RETFPG        IFLT      4
+     C     OPECTA        ANDEQ     *BLANKS
+     C                   EXSR      BUSCTA
+      *
+     C*
+     C* Validacion y Conversion Cuenta
+     C*
+     C     OPECTA        IFNE      *BLANKS
+     C                   EXSR      VALCTA
+     C     *IN35         IFEQ      '0'
+     C*                  MOVE      CTA20         OPECTA
+     C                   ELSE
+     C                   SETOFF                                       6535
+     C                   ENDIF
+     C                   ENDIF
+     C*
+     C                   ENDIF
+     C*
+     C                   ENDIF
+     C*
+     C     *IN35         IFEQ      '0'
+     C     DATAPO        IFEQ      *ZEROS
+     C                   SETON                                        333564
+     C                   ELSE
+     C     DATAPO        CHAIN     TABTR                              41
+     C     *IN41         IFEQ      '1'
+     C                   SETON                                        353864
+     C                   ELSE
+     C                   MOVE      TEXTO         TIPAPO
+     C                   SETON                                            56
+     C                   END
+     C                   END
+     C                   END
+     C*
+     C     *IN35         IFEQ      '0'
+     C     DATFID        IFEQ      *ZEROS
+     C     CLINIF        ANDEQ     *BLANKS
+     C                   SETON                                        253335
+     C                   END
+     C                   ENDIF
+     C*
+     C* Tipo Contrato
+     C*
+     C     *IN35         IFEQ      '0'
+     C     APOTCN        IFEQ      *ZEROS
+     C                   SETON                                        273335
+     C                   ELSE
+     C*
+     C* Numero Contrato
+     C*
+     C     APOCON        IFEQ      *ZEROS
+     C                   SETON                                        283335
+     C                   ELSE
+     C*
+     C* Tipo Contrato
+     C*
+     C     APOTCN        CHAIN     TABTC                              41
+     C     *IN41         IFEQ      '1'
+     C                   SETON                                        263538
+     C                   ELSE
+     C*
+     C  N41              MOVEL     TEXTO         TIPCON
+     C     FIMACU        IFNE      'FI'
+     C                   SETON                                          3569
+     C                   ELSE
+     C*
+     C* Contrato
+     C*
+     C     APOCON        IFNE      *ZEROS
+     C     *IN35         ANDEQ     '0'
+     C                   OPEN      CONTRATO
+     C     CLAVE2        CHAIN     CONTRATO                           40
+     C     *IN40         IFEQ      '1'
+     C                   SETON                                        323554
+     C                   ELSE
+     C     CTNFMT        CHAIN     TABTC                              40
+     C                   MOVE      TEXTO         TIPCON
+     C                   CLOSE     CONTRATO
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C*
+     C* Divisa
+     C*
+     C     *IN35         IFEQ      '0'
+     C                   SETOFF                                           56
+     C                   MOVE      RETDIV        DIVCLA
+     C     DIVCLA        CHAIN     AA2TDIV                            44
+     C     *IN44         IFEQ      '1'
+     C                   SETON                                        233538
+     C                   ELSE
+     C                   SETON                                            46
+     C                   END
+     C                   END
+     C*
+     C* Monto Retiro / Pago
+     C*
+     C     *IN35         IFEQ      '0'
+     C                   SETOFF                                           46
+     C     MNTAPO        IFEQ      *ZEROS
+     C                   SETON                                        333545
+     C                   ELSE
+     C*    MNTAPO        IFGT      MTATRA
+     C*                  SETON                                        3567
+     C*                  ELSE
+     C*
+     C*    DATAPO        IFNE      05
+     C*    DATAPO        ANDNE     06
+     C     DATAPO        IFNE      07
+     C     FIESP         ANDNE     *BLANK
+     C     MNTAPO        ANDGT     APASAL
+     C                   SETON                                        3584
+     C                   ENDIF
+     C*
+     C*    DATAPO        IFEQ      05
+     C*    WSCLAV        CHAIN     GASGES                             84
+     C*    *IN84         IFEQ      *OFF
+     C*    MNTAPO        ANDGT     GIMPOR
+     C*                  SETON                                        84
+     C*                  ENDIF
+     C*    *IN84         IFEQ      *ON
+     C*                  SETON                                        35
+     C*                  ENDIF
+     C*                  ENDIF
+     C*
+     C                   END
+     C                   END
+     C*
+     C* Comision
+     C*
+     C     *IN35         IFEQ      '0'
+     C     MNTAPO        IFEQ      *ZEROS
+     C     APOPRC        ANDNE     *ZEROS
+     C                   SETON                                        3635
+     C                   END
+     C                   END
+     C*
+     C                   MOVE      *BLANKS       RETPAG
+     C*
+     C* Forma Pago
+     C*
+     C     *IN35         IFEQ      '0'
+     C     RETFPG        CHAIN     TABFP                              89
+     C     *IN89         IFEQ      *ON
+     C                   SETON                                        35
+     C                   ELSE
+     C                   MOVE      TEXTO         RETPAG
+     C                   END
+     C                   END
+     C*
+     C* Obtencion Cuenta segun Forma de Pago
+     C*
+     C     *IN35         IFEQ      '0'
+     C     OPECTA        ANDEQ     *BLANKS
+     C*
+     C     RETFPG        IFLT      4
+     C                   EXSR      BUSCTA
+     C     OPECTA        IFEQ      *BLANKS
+     C                   SETON                                        3565
+     C                   ENDIF
+     C                   ENDIF
+     C                   ENDIF
+     C*
+     C     *IN35         IFEQ      '0'
+     C     RETFPG        IFEQ      5
+     C     RETFPG        OREQ      6
+     C     RETFPG        OREQ      9
+     C                   EXSR      CTACAB
+     C                   ENDIF
+      *
+     C                   ENDIF
+     C*
+     C     *IN35         IFEQ      '0'
+     C     OPECTA        ANDNE     *BLANKS
+     C                   EXSR      VALCTA
+     C     *IN35         IFEQ      '0'
+     C*                  MOVE      CTA20         OPECTA
+     C                   ENDIF
+     C                   ENDIF
+     C*
+     C     *IN35         IFEQ      '0'
+     C                   CLOSE     AA2MCLI
+     C                   OPEN      AA2MCLI
+     C                   END
+     C*
+     C* Preparacion Fechas Grabacion
+     C*
+     C     *IN35         IFEQ      '0'
+     C     *IN39         ANDEQ     '0'
+     C                   MOVE      'C'           OPER
+     C                   MOVE      'T'           FORM
+     C                   MOVE      FECOPE        FEC6
+     C                   MOVE      *ZEROS        FEC8
+     C                   MOVE      *BLANKS       FEST
+     C                   MOVE      *BLANKS       ERR
+     C                   EXSR      INVERT
+     C                   MOVE      FEC8          DATFOP
+     C                   MOVE      'C'           OPER
+     C                   MOVE      'T'           FORM
+     C                   MOVE      FECVAL        FEC6
+     C                   MOVE      *ZEROS        FEC8
+     C                   MOVE      *BLANKS       FEST
+     C                   MOVE      *BLANKS       ERR
+     C                   EXSR      INVERT
+     C                   MOVE      FEC8          DATFVL
+     C     ERR           IFEQ      '*'
+     C                   SETON                                          3952
+     C                   MOVE      *BLANKS       ERR
+     C                   ELSE
+     C     FEST          IFEQ      'S'
+     C                   MOVE      *BLANKS       FEST
+     C                   END
+     C                   END
+     C                   END
+     C                   END
+     C*
+     C* Preparacion Campos Grabacion
+     C*
+     C     *IN35         IFEQ      '0'
+     C     *IN39         ANDEQ     '0'
+     C     *IN03         ANDEQ     '0'
+     C     *IN12         ANDEQ     '0'
+     C*
+     C* Calculo Monto Comision
+     C*
+     C     MNTAPO        IFNE      *ZEROS
+     C     APOCOM        IFNE      *ZEROS
+     C     APOCOM        MULT      100           ACUM             19 6
+     C     ACUM          DIV       MNTAPO        ACUM
+     C                   Z-ADD     ACUM          APOPRC
+     C                   ELSE
+     C     APOPRC        MULT      MNTAPO        ACUM             19 6
+     C     ACUM          DIV       100           ACUM
+     C                   Z-ADD     ACUM          APOCOM
+     C                   END
+     C                   END
+     C                   MOVE      EMP1          DATEMP
+     C                   MOVE      DEL1          DATDEL
+     C*
+     C* Porcentaje Distribucion Pago si varios Fideicomitentes
+     C*
+     C     clapar1       CHAIN     aa2part1                           81
+     C                   EXFMT     FMT3
+     C*
+     C     *IN12         IFNE      '1'
+     C                   MOVE      RETDIV        DATDI1            3
+ZZZ  C                   MOVE      DATCLI        DATFI1            7
+     C                   MOVE      DATCTA        RECCTA
+     C                   MOVE      'C'           RECDOC            1
+     C                   MOVE      'RE'          RECOPE            2
+     C     RETDPV        IFEQ      'S'
+***  C                   Z-ADD     0             RECTIP            2 0
+     C                   ELSE
+     C                   Z-ADD     0             RECTIP
+     C                   END
+     C                   CALL      'RECIBOS'
+     C                   PARM                    DATFI1
+     C                   PARM                    RECDOC
+     C                   PARM                    RECTIP
+     C                   PARM                    RECOPE
+     C                   PARM                    MNTAPO
+     C                   PARM                    DATDI1
+     C                   PARM                    RECCTA           20
+     C                   PARM                    OPEREC
+     C                   PARM                    SIST              5
+     C                   PARM                    IPR               1
+     C*
+     C     IPR           IFEQ      *BLANKS
+     C*
+     C* Conversion Divisa si distinta a Contrato
+     C*
+     C                   Z-ADD     *ZEROS        AUXMNT           14 2
+     C     RETDIV        IFEQ      DATDIV
+     C                   SUB       MNTAPO        MTATRA
+     C                   ELSE
+     C     DATDIV        IFEQ      1
+     C     MNTAPO        MULT      DIVCCO        AUXMNT
+     C                   SUB       AUXMNT        MTATRA
+     C                   ELSE
+     C     MNTAPO        DIV       DIVCVE        AUXMNT
+     C                   SUB       AUXMNT        MTATRA
+     C                   END
+     C                   END
+     C                   Z-ADD     NUAPO         OPENUM
+     C                   MOVE      EMP1          OPEEMP
+     C                   MOVE      DEL1          OPEDEL
+     c     fiesp         ifeq      *blank
+     C                   MOVE      CLICLAC       OPECLI
+     c                   else
+     c     fiesp         chain     aalmclif                           77
+     c                   z-add     clicla        opecli
+     c                   endif
+     C                   MOVE      'RE'          OPEOPE
+     C                   Z-ADD     DATFOP        OPEFEC
+     C                   Z-ADD     DATFVL        OPEFVL
+     C                   Z-ADD     MNTAPO        OPEMNT
+     C                   MOVE      RETDPV        OPEVAL
+     C                   MOVE      RETDIV        OPEDIV
+     C                   MOVE      USU1          OPEUSU
+     C                   MOVE      ' '           OPEPEN
+     C                   MOVE      APOCOM        OPECOM
+     C                   MOVE      RETOBS        OPEOBS
+     c                   z-add     retfpg        opepgo
+     c                   z-add     datapo        opetap
+     C                   Z-ADD     AUXDAT        DATCLI
+     C                   Z-ADD     MTATRA        DATMTA
+     C                   Z-ADD     MNTTRA        DATMNT
+     C                   OPEN      DATFIDE
+     C     CLAVE4        CHAIN     DATFIDE                            43
+     C                   UPDATE    RDATFI
+     C                   CLOSE     DATFIDE
+     C                   WRITE     ROPEFI
+     C*
+     C* Actualiza Saldo Gastos - GASGES
+     C*
+     c     datapo        ifeq      05
+     c                   move      'R'           apo               1
+     c                   call      'RGASTOS'
+     c                   PARM                    WSCLAV
+     c                   parm                    apo
+     c                   parm                    mntapo
+     c                   endif
+     C*
+     c* Actualiza Contrato
+     C*
+     C                   OPEN      LCONTRAT
+     C     CLAVE5        CHAIN     LCONTRAT                           40
+     C                   Z-ADD     MTATRA        DATMTA
+     c                   update    rcont1
+     C                   CLOSE     LCONTRAT
+     C*
+     c* Graba Movimiento Retiro y Contabiliza
+     C*
+     C                   EXSR      EMOVFID
+     C                   EXSR      CONTAB
+     C                   SETON                                            03
+     C                   END
+     C                   END
+     C                   SETOFF                                           12
+     C                   END
+     C                   ENDSR
+     C*
+     C* Cambio Fecha Valor
+     C*
+     C     CAMBIO        BEGSR
+     C                   CALL      'PWD'
+     C                   PARM                    ACCESS            1
+     C     ACCESS        IFEQ      'S'
+     C                   MOVE      FECVAL        FECMOD
+     C                   EXFMT     WDW4
+     C     *IN12         IFEQ      '0'
+     C                   MOVE      FECMOD        FECVAL
+     C                   END
+     C                   END
+     C                   ENDSR
+     C*
+     C* Consultas
+     C*
+     C     SOLI2         BEGSR
+     C                   SELECT
+     C*
+     C* Cliente Fideicomiso
+     C*
+ZZZ  C     'DATCLI'      WHENEQ    CAMCUR
+     C     'CLINIF'      OREQ      CAMCUR
+     C                   CALL      'CONCLX'
+ZZZ  C                   PARM                    DATCLI
+ZZZ  C     DATCLI        IFEQ      *ZEROS
+     C                   SETON                                            54
+     C                   ELSE
+     C                   SETON                                            75
+     C                   END
+ZZZ  C     DATCLI        CHAIN     AA2MCLI                            40
+     C                   MOVEL     *BLANKS       NOMBRE
+     C     CLISEX        IFEQ      '3'
+     C                   MOVEL     '*'           NOMBRE
+     C                   END
+     C                   CALL      'COMPNOM'
+     C                   PARM                    CLINOM
+     C                   PARM                    CLIAPE
+     C                   PARM                    CLIAP2
+     C                   PARM                    NOMBRE           50
+     C     CLICLS        CHAIN     TABCCLI                            43
+     C  N43              MOVEL     TEXTO         CLASE
+     C*
+     C* Tipo Contrato
+     C*
+     C     'APOTCN'      WHENEQ    CAMCUR
+     C                   MOVE      'N'           CRE
+     C                   MOVE      '0'           RET
+     C                   MOVE      'FI'          FMTCON            2
+     C                   CALL      'CONTABTC'
+     C                   PARM                    APOTCN
+     C                   PARM                    CRE               1
+     C                   PARM                    RET               1
+     C                   PARM                    FMTCON
+     C*
+     C     RET           IFEQ      '0'
+     C     APOTCN        CHAIN     TABTC                              41
+     C                   MOVE      TEXTO         TIPCON
+     C                   SETON                                            74
+     C                   ELSE
+     C                   SETON                                            51
+     C                   END
+     C*
+     C* Numero Contrato
+     C*
+     C     'APOCON'      WHENEQ    CAMCUR
+     C     CLINIF        IFNE      *BLANKS
+     C     CLINIF        CHAIN     AALMCLIF                           40
+ZZZ  C                   Z-ADD     CLICLA        DATCLI
+     C                   END
+     C                   MOVE      APOCON        AUXCON            8 0
+     C                   CALL      'SELCON'
+     C                   PARM                    EMP1
+     C                   PARM                    DEL1
+     C                   PARM                    APOTCN
+     C                   PARM                    APOCON
+ZZZ  C                   PARM                    DATCLI
+     C*
+     C     APOCON        IFEQ      *ZEROS
+     C                   SETON                                            74
+     C                   MOVE      AUXCON        APOCON
+     C                   ELSE
+     C                   SETON                                            64
+     C                   END
+     C*
+     C* Tipo Retiro
+     C*
+     C     'DATAPO'      WHENEQ    CAMCUR
+     C                   MOVE      'N'           CRE
+     C                   MOVE      '0'           RET
+     C                   CALL      'CONTABTR'
+     C                   PARM                    DATAPO
+     C                   PARM                    CRE               1
+     C                   PARM                    RET               1
+     C*
+     C     RET           IFEQ      '0'
+     C     DATAPO        CHAIN     TABTR                              41
+     C                   MOVE      TEXTO         TIPAPO
+     C                   SETON                                            56
+     C                   ELSE
+     C                   SETON                                          6064
+     C                   END
+     C*
+     C* Tipo Divisa
+     C*
+     C     'RETDIV'      WHENEQ    CAMCUR
+     C                   CALL      'CONDIV'
+     C                   PARM                    DIVAUX            3
+     C                   MOVE      DIVAUX        RETDIV
+     C*
+     C     RETDIV        IFEQ      *ZEROS
+     C                   SETON                                            56
+     C                   ELSE
+     C                   SETON                                            46
+     C                   END
+     C                   MOVE      RETDIV        DIVCLA
+     C     DIVCLA        CHAIN     AA2TDIV                            44
+     C*
+     C* Forma de Pago
+     C*
+     C     'RETFPG'      WHENEQ    CAMCUR
+     C                   MOVE      *ON           *IN(34)
+     C                   MOVE      'N'           CRE
+     C                   MOVE      '0'           RET
+     C                   CALL      'CONTABFP'
+     C                   PARM                    RETFPG
+     C                   PARM                    CRE
+     C                   PARM                    RET
+     C*
+     C     RET           IFEQ      '0'
+     C                   CLEAR                   RETPAG
+     C     RETFPG        CHAIN     TABFP                              42
+     C                   MOVE      TEXTO         RETPAG
+     C     RETFPG        IFLT      4
+     C                   EXSR      BUSCTA
+     C                   ENDIF
+      *
+     C     RETFPG        IFEQ      5
+     C     RETFPG        OREQ      6
+     C     RETFPG        OREQ      9
+     C                   EXSR      CTACAB
+     C                   ENDIF
+     C                   END
+     C*
+     C* Cuenta
+     C*
+     C     'OPECTA'      WHENEQ    CAMCUR
+     C                   MOVE      *ON           *IN(31)
+     C*
+     c                   MOVE      'R'           MOV               1
+     C                   MOVE      CLINIX        WCED             12
+     c                   Z-ADD     DATFID        CLIENTEX          7 0
+     C                   MOVE      *BLANK        CTA              20
+     C                   CALL      'IBS06'
+     C                   PARM                    MOV
+     C                   PARM                    WSCLAV
+     c                   PARM                    WCED
+     c                   PARM                    CLIENTEX
+     c                   PARM                    CTA
+     c     CTA           IFNE      *BLANK
+     c                   MOVEL     CTA           OPECTA
+     c                   endif
+     C*
+     C                   ENDSL
+     C*
+     C* Validacion y Conversion Cuenta
+     C*
+     C     OPECTA        IFNE      *BLANKS
+     C                   EXSR      VALCTA
+     C     *IN35         IFEQ      '0'
+     C*                  MOVE      CTA20         OPECTA
+     C                   ELSE
+     C                   SETOFF                                       6535
+     C                   ENDIF
+     C                   ENDIF
+     C*
+     C                   ENDSR
+     C*
+     C* Cambio Formato Fecha
+     C*
+     C     INVERT        BEGSR
+     C                   CALL      'FECHAS'
+     C                   PARM                    OPER              1
+     C                   PARM                    FORM              1
+     C                   PARM                    FEC6              6 0
+     C                   PARM                    FEC8              8 0
+     C                   PARM                    FEST              1
+     C                   PARM                    ERR               1
+     C                   ENDSR
+     C*
+     C* Contabilidad y Actualizacion Saldo Fideicomitente
+     C*
+     C     CONTAB        BEGSR
+     C*
+     c* Impuesto al Debito
+     C*
+     c                   z-add     *zeros        claim             2 0
+     c     claim         chain     aa2ieso                            55
+     c     *in55         ifeq      '1'
+     c                   goto      contabx
+     c                   endif
+     c     con06         ifeq      ' '
+     c                   goto      contabx
+     c                   endif
+     c                   z-add     retfpg        tipo
+     c                   z-add     mntapo        bruto
+     c                   z-add     *zeros        idb
+     c                   z-add     *zeros        cheque
+     c                   z-add     6             tiptra
+     c                   move      *blank        codi
+     c                   move      *blank        resp
+     c                   z-add     *zeros        cliente           7 0
+     c     ind81         ifne      0
+     c                   z-add     datfid        cliente
+     c                   else
+     C     fiesp         CHAIN     aalmclif                           82
+     c                   z-add     clicla        cliente
+     c                   endif
+     c                   z-add     nuapo         numope
+     c                   z-add     apocom        apocomx          15 2
+     c                   call      'CLIES02A'
+     C                   PARM                    cliente
+     C                   PARM                    fecval            6 0
+     C                   PARM                    tipo              2 0
+     C                   PARM                    NUmope           10 0
+     C                   PARM                    bruto            15 2
+     C                   PARM                    apocomx          15 2
+     C                   PARM                    IDB              15 2
+     C                   PARM                    CHEQUE           15 2
+     C                   PARM                    TIPTRA            2 0
+     C                   PARM                    codi              1
+     C                   PARM                    RESP              1
+     C     CONTABx       tag
+     C*
+     C* Actualiza Saldo Fideicomitente
+     C*
+     c                   z-add     datfid        wwdatfid          7 0
+     c     fiesp         ifne      *blank
+     c     fiesp         chain     aalmclif                           77
+     c                   z-add     clicla        wwdatfid
+     c                   z-add     2             opc               1 0
+     c                   move      *blank        error             1
+     c                   close     aa2part
+     c                   close     aa2part1
+     c                   call      'MARAC02'
+     c                   parm                    opc
+     c                   parm                    fiesp
+     c                   parm                    mntapo
+     c                   parm                    error
+     c                   open      aa2part
+     c                   open      aa2part1
+     c                   endif
+     C*
+     C** Tipo Aporte (DATAPO) = 05 contabiliza PAGO COMISIONES BANCARIAS
+     C** Tipo Aporte (DATAPO) = 06 contabiliza PAGO GASTOS NOTARIA
+     C** Tipo Aporte (DATAPO) = 07 contabiliza PAGO RENDIMIENTOS
+     C*
+     c     wwdatfid      ifeq      datfid
+     C     DATAPO        IFLT      05
+     C     DATAPO        OREQ      14
+     C     DATAPO        OREQ      27
+     C     DATAPO        OREQ      28
+     C                   MOVE      'H'           CONLIQ
+     C                   MOVE      'RIA'         CAMMOD
+     C                   MOVE      '   '         CODOPE
+     C                   Z-ADD     MNTAPO        INTERE
+     C                   Z-ADD     APOCOM        APRECI
+     C                   Z-ADD     OPENUM        NUMOP1
+     C                   Z-ADD     DATFID        CORRES
+     C                   MOVE      FECVAL        WECHA
+     C                   MOVEL     WSCLAV        VLOCOA
+     C                   CALL      'INTCOH2I'
+     C                   PARM                    CAMMOD            3
+     C                   PARM                    INTERE           15 2
+     C                   PARM                    APRECI           15 2
+     C                   PARM                    wwDATFID
+     C                   PARM                    VLOCOA           12
+     C                   PARM                    NUMOP1           10 0
+     C                   PARM                    WECHA             6 0
+     C                   PARM                    RETDIV            3 0
+     C                   PARM                    CORRES            7 0
+     C                   PARM                    CONLIQ            1
+     C                   PARM                    CODOPE            3
+     c                   end
+     C                   END
+     c     wwdatfid      ifne      datfid
+     C     DATAPO        IFLT      05
+     C     DATAPO        OREQ      14
+     C     DATAPO        OREQ      27
+     C     DATAPO        OREQ      28
+     C                   MOVE      'H'           CONLIQ
+     C                   MOVE      'RIN'         CAMMOD
+     C                   MOVE      '   '         CODOPE
+     C                   Z-ADD     MNTAPO        INTERE
+     C                   Z-ADD     APOCOM        APRECI
+     C                   Z-ADD     OPENUM        NUMOP1
+     C                   Z-ADD     DATFID        CORRES
+     C                   MOVE      FECVAL        WECHA
+     C                   MOVEL     WSCLAV        VLOCOA
+     C                   CALL      'INTCOH2I'
+     C                   PARM                    CAMMOD            3
+     C                   PARM                    INTERE           15 2
+     C                   PARM                    APRECI           15 2
+     C                   PARM                    wwDATFID
+     C                   PARM                    VLOCOA           12
+     C                   PARM                    NUMOP1           10 0
+     C                   PARM                    WECHA             6 0
+     C                   PARM                    RETDIV            3 0
+     C                   PARM                    CORRES            7 0
+     C                   PARM                    CONLIQ            1
+     C                   PARM                    CODOPE            3
+     c                   end
+     C                   END
+      *
+     C     DATAPO        IFEQ      05
+     C                   MOVE      'H'           CONLIQ
+     C                   MOVE      'REG'         CAMMOD
+     C                   MOVE      '   '         CODOPE
+     C                   Z-ADD     MNTAPO        INTERE
+     C                   Z-ADD     APOCOM        APRECI
+     C                   Z-ADD     OPENUM        NUMOP1
+     C                   Z-ADD     DATFID        CORRES
+     C                   MOVE      FECVAL        WECHA
+     C                   MOVEL     WSCLAV        VLOCOA
+     C                   CALL      'INTCOH2I'
+     C                   PARM                    CAMMOD            3
+     C                   PARM                    INTERE           15 2
+     C                   PARM                    APRECI           15 2
+     C                   PARM                    wwDATFID
+     C                   PARM                    VLOCOA           12
+     C                   PARM                    NUMOP1           10 0
+     C                   PARM                    WECHA             6 0
+     C                   PARM                    RETDIV            3 0
+     C                   PARM                    CORRES            7 0
+     C                   PARM                    CONLIQ            1
+     C                   PARM                    CODOPE            3
+     C                   END
+     C     DATAPO        IFEQ      06
+     C                   MOVE      'H'           CONLIQ
+     C                   MOVE      'RES'         CAMMOD
+     C                   MOVE      '   '         CODOPE
+     C                   Z-ADD     MNTAPO        INTERE
+     C                   Z-ADD     APOCOM        APRECI
+     C                   Z-ADD     OPENUM        NUMOP1
+     C                   Z-ADD     DATFID        CORRES
+     C                   MOVE      FECVAL        WECHA
+     C                   MOVEL     WSCLAV        VLOCOA
+     C                   CALL      'INTCOH2I'
+     C                   PARM                    CAMMOD            3
+     C                   PARM                    INTERE           15 2
+     C                   PARM                    APRECI           15 2
+     C                   PARM                    wwDATFID
+     C                   PARM                    VLOCOA           12
+     C                   PARM                    NUMOP1           10 0
+     C                   PARM                    WECHA             6 0
+     C                   PARM                    RETDIV            3 0
+     C                   PARM                    CORRES            7 0
+     C                   PARM                    CONLIQ            1
+     C                   PARM                    CODOPE            3
+     C                   END
+     C     DATAPO        IFEQ      10
+     C                   MOVE      'H'           CONLIQ
+     C                   MOVE      'AM4'         CAMMOD
+     C                   MOVE      '   '         CODOPE
+     C                   Z-ADD     MNTAPO        INTERE
+     C                   Z-ADD     APOCOM        APRECI
+     C                   Z-ADD     OPENUM        NUMOP1
+     C                   Z-ADD     DATFID        CORRES
+     C                   MOVE      FECVAL        WECHA
+     C                   MOVEL     WSCLAV        VLOCOA
+     C                   CALL      'INTCOH2I'
+     C                   PARM                    CAMMOD            3
+     C                   PARM                    INTERE           15 2
+     C                   PARM                    APRECI           15 2
+     C                   PARM                    wwDATFID
+     C                   PARM                    VLOCOA           12
+     C                   PARM                    NUMOP1           10 0
+     C                   PARM                    WECHA             6 0
+     C                   PARM                    RETDIV            3 0
+     C                   PARM                    CORRES            7 0
+     C                   PARM                    CONLIQ            1
+     C                   PARM                    CODOPE            3
+     C                   END
+     C     DATAPO        IFEQ      07
+     C                   MOVE      'H'           CONLIQ
+     C                   MOVE      'REO'         CAMMOD
+     C                   MOVE      '   '         CODOPE
+     C                   Z-ADD     MNTAPO        INTERE
+     C                   Z-ADD     APOCOM        APRECI
+     C                   Z-ADD     OPENUM        NUMOP1
+     C                   Z-ADD     DATFID        CORRES
+     C                   MOVE      FECVAL        WECHA
+     C                   MOVEL     WSCLAV        VLOCOA
+     C                   CALL      'INTCOH2I'
+     C                   PARM                    CAMMOD            3
+     C                   PARM                    INTERE           15 2
+     C                   PARM                    APRECI           15 2
+     C                   PARM                    wwDATFID
+     C                   PARM                    VLOCOA           12
+     C                   PARM                    NUMOP1           10 0
+     C                   PARM                    WECHA             6 0
+     C                   PARM                    RETDIV            3 0
+     C                   PARM                    CORRES            7 0
+     C                   PARM                    CONLIQ            1
+     C                   PARM                    CODOPE            3
+     C                   END
+     C     DATAPO        IFEQ      08
+     C                   MOVE      'H'           CONLIQ
+     C                   MOVE      'REF'         CAMMOD
+     C                   MOVE      '   '         CODOPE
+     C                   Z-ADD     MNTAPO        INTERE
+     C                   Z-ADD     APOCOM        APRECI
+     C                   Z-ADD     OPENUM        NUMOP1
+     C                   Z-ADD     DATFID        CORRES
+     C                   MOVE      FECVAL        WECHA
+     C                   MOVEL     WSCLAV        VLOCOA
+     C                   CALL      'INTCOH2I'
+     C                   PARM                    CAMMOD            3
+     C                   PARM                    INTERE           15 2
+     C                   PARM                    APRECI           15 2
+     C                   PARM                    wwDATFID
+     C                   PARM                    VLOCOA           12
+     C                   PARM                    NUMOP1           10 0
+     C                   PARM                    WECHA             6 0
+     C                   PARM                    RETDIV            3 0
+     C                   PARM                    CORRES            7 0
+     C                   PARM                    CONLIQ            1
+     C                   PARM                    CODOPE            3
+     C                   END
+     C                   ENDSR
+     C*
+     C* Grabacion Movimiento
+     C*
+     C     EMOVFID       BEGSR
+     C                   MOVE      OPEEMP        MOVEMP
+     C                   MOVE      OPEDEL        MOVDEL
+     C                   MOVE      WSCLAV        MOVCFI
+     c     fiesp         ifeq      *blank
+     C                   MOVE      DATCLI        movCLI
+     c                   else
+     c     fiesp         chain     aalmclif                           77
+     c                   z-add     clicla        movcli
+     c                   endif
+     C                   MOVE      'R'           MOVCON
+     C                   MOVE      'C'           MOVDOC
+     C                   MOVE      NUAPO         MOVNRO
+     C                   Z-ADD     RETFPG        MOVPGO
+     C     RETFPG        CHAIN     TABFP                              58
+     C                   MOVE      opecta        MOVCTA
+     C                   MOVE      CUENTA        MOVTCT
+     C                   Z-ADD     FECVAL        MOVFEC
+     c     fecval        chain     aa2fec                             58
+     c                   z-add     fecamd        movamd
+     c                   eval      movimp = mntapo - apocom
+     C                   Z-ADD     APOCOM        MOVIMC
+     C                   MOVE      USU1          MOVUSR
+     C                   TIME                    MOVTIM
+     C     UDATE         CHAIN     AA2FEC                             58
+     C                   Z-ADD     FECAMD        MOVFPC
+     C                   MOVE      ' '           MOVSIT
+     c                   move      pant          movdsp
+     C                   WRITE     RMOVF
+     C                   ENDSR
+     C*
+     C* Obtiene Cuenta
+     C*
+     c     buscta        begsr
+     c                   movel     *blank        opecta
+     c                   movel     *blank        opeban
+     c     clacta        setll     cuentas
+     c                   read      cuentas                                76
+     c     *in76         ifeq      '0'
+     c     DATFID        ifeq      ctccli
+     c                   movel     ctccta        opecta
+     c                   movel     ctcban        opeban
+     c                   endif
+     c                   endif
+     c                   endsr
+     C*
+     C* Validacion y Conversion Cuentas Contables
+     C*
+     C     VALCTA        BEGSR
+     C*
+     C* Ajuste Cuenta
+     C*
+     C                   MOVEA     *BLANKS       ARREGLA
+     C                   MOVE      OPECTA        CTAX2
+     C                   IF        CTAX3 = *BLANKS
+     C                   MOVEA     OPECTA        ARREGLO
+     C                   Z-ADD     20            I                 2 0
+     C                   Z-ADD     20            J                 2 0
+      *
+     C                   DOW       I > 0
+      *
+     C                   IF        ARREGLO(I) <> ' '
+     C                   MOVE      ARREGLO(I)    ARREGLA(J)
+     C                   SUB       1             J
+     C                   ENDIF
+      *
+     C                   SUB       1             I
+      *
+     C                   ENDDO
+    *
+     C                   MOVEA     ARREGLA       OPECTA
+     C                   ENDIF
+      *
+     C*                  SETOFF                                       6535
+      *
+     C*                  CLEAR                   CTAX
+     C*
+     C*                  MOVE      OPECTA        CTAX
+     C*
+     C*                  IF        CTAX1 = *BLANKS
+     C*                  MOVE      OPECTA        CTAVAL           12 0
+     C*    CTAVAL        CHAIN     ACMSTL0                            65
+     C*  65              MOVE      *ON           *IN(35)
+      *
+     C*                  IF        *IN(65) = *OFF
+     C*                  MOVEL     *BLANKS       KEYBNK            8
+     C*    KEYBNK        CHAIN     CNTRLCNT                           90
+     C                   MOVE      OPECTA        CTA12            12 0
+     C                   CLEAR                   CTA20            20 0
+      *
+      * Conversion Cuentas Contables de 10 a 20 Digitos
+      *
+     C*                  CALL      'CONVCT01'
+     C*                  PARM                    CTA12
+     C*                  PARM                    CTA20
+     C*                  ENDIF
+      *
+     C*                  ELSE
+      *
+      * Validacion Cuentas Contables de 20 D¡gitos
+      *
+     C*                  CLEAR                   SAL               1
+     C                   MOVE      OPECTA        CTA20
+     C*                  CLEAR                   CTA12
+      *
+     C*                  CALL      'CONVCT02'
+     C*                  PARM                    CTA20
+     C*                  PARM                    CTA12
+     C*                  PARM                    SAL
+     C*
+     C* Si Cuenta Incorrecta Emite mensaje
+     C*
+     C*                  IF        SAL = '1'
+     C*                  SETON                                        6535
+     C*                  ENDIF
+     C*                  ENDIF
+     C                   ENDSR
+     C*
+     C* Busqueda Cuenta Forma de Pago 5 / 6 / 9
+     C*
+     C     CTACAB        BEGSR
+     C*
+     C                   CALL      'CABBAC5'
+     C                   PARM                    WSCLAV
+     C                   PARM                    LITERAX          60
+     C                   PARM                    NCTFIDX          20
+     C                   PARM                    NCTCOMX          20
+     C                   PARM                    NCTCUSX          20
+     C                   PARM                    NCTCHME          20
+     C                   PARM                    NCTCHOP          20
+     c                   parm                    NCTBCV           20
+     C                   PARM                    NCTAFLX          20
+     C                   PARM                    NCTAISX          20
+     C                   PARM                    NCTGAOX          20
+     C                   PARM                    NCTRIVX          20
+     C*
+     C     RETFPG        IFEQ      5
+     C                   MOVE      NCTCHME       OPECTA
+     c                   MOVEL     '       '     OPEBAN
+     C                   ENDIF
+     C*
+     C     RETFPG        IFEQ      6
+     C                   MOVE      NCTCHOP       OPECTA
+     c                   MOVEL     '       '     OPEBAN
+     C                   ENDIF
+     C*
+     C     RETFPG        IFEQ      9
+     C                   MOVE      NCTBCV        OPECTA
+     c                   MOVEL     '       '     OPEBAN
+     C                   ENDIF
+     C*
+     C                   ENDSR
+     C*
+     C* Validacion Fechas
+     C*
+     C     VALIFEC       BEGSR
+     C                   SETOFF                                       8073
+     C     FECVAL        CHAIN     AA2FEC                             52
+     C     *IN52         IFEQ      *ON
+     C                   SETON                                        35
+     C                   ELSE
+     C     FECVAL        IFNE      *ZEROS
+     C     WSCLAV        CHAIN     FCTLCON                            73
+     C     *IN73         IFEQ      *OFF
+     C     FECAMD        ANDLE     CONFEC
+     C                   SETON                                        8035
+     C                   ENDIF
+     C                   ENDIF
+     C                   ENDIF
+     C     *IN35         IFEQ      *OFF
+     C     FECAMD        ANDGT     FECDIA
+     C                   SETON                                        8035
+     C                   ENDIF
+     C                   ENDSR

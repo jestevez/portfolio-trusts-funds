@@ -1,0 +1,81 @@
+     H DECEDIT('0,') DFTNAME(DEPART) DATEDIT(*DMY.)
+     FDEPARTFM  CF   E             WORKSTN
+     FAA2MTAB   IF   E           K DISK
+     FAA2TDPTO  UF A E           K DISK
+     D S               S             57    DIM(2) CTDATA PERRCD(1)
+     D LDA            UDS
+     D  EMP1                 254    255
+     D  DEL1                 256    257
+     C     BUSZ15        KLIST
+     C                   KFLD                    EMP1
+     C                   KFLD                    DEL1
+     C                   KFLD                    Z15
+     C     CLATAB        KLIST
+     C                   KFLD                    EMP1
+     C                   KFLD                    DEL1
+     C     *DTAARA       DEFINE    *LDA          LDA
+     C                   IN        LDA
+     C*                    EXFMTPANTA0
+     C     R1            TAG
+     C   81              EXFMT     PANTA01
+0023 C                   SETOFF                                       83
+0024 C   07              SETOFF                                       81
+0025 C   07              SETON                                        LR
+0026 C   07              GOTO      FINAL
+0102 C   90              GOTO      R81
+0103 C                   SETON                                        90
+0106 C     CLATAB        CHAIN     AA2MTAB                            99
+0117 C                   Z-ADD     0             Z15              15 0
+0201 C                   MOVEL     '05'          Z15
+0110 C     R90           TAG
+0045 C                   SETON                                        112230
+0046 C                   SETON                                        81
+0047 C                   SETOFF                                       122120
+0048 C                   MOVE      *BLANK        DESCRI
+0049 C                   MOVE      *BLANK        CLAVE
+0050 C                   GOTO      FIN
+0051 C     R81           TAG
+0052 C  N81              GOTO      FIN
+0053 C  N11              GOTO      R12
+0054 C   09              GOTO      R90
+0055 C                   MOVE      CLAVE         Z15
+0056 C     BUSZ15        CHAIN     AA2TDPTO                           84
+0057 C   84              SETON                                        83
+0058 C   83              MOVEL     S(1)          TEXERR
+     C   83              EXFMT     PANTA3
+0059 C                   SETON                                        1221
+0060 C                   SETOFF                                       1122
+0061 C  N84              MOVEL     DEPNOM        DESCRI
+0062 C                   GOTO      FIN
+0063 C     R12           TAG
+0064 C  N12              GOTO      R20
+0065 C   09              SETOFF                                       1221
+0066 C   09              SETON                                        1122
+0067 C   09              GOTO      FIN
+0068 C     DESCRI        COMP      *BLANK                                 83
+0069 C   83              MOVEL     S(2)          TEXERR
+     C   83              EXFMT     PANTA3
+0070 C   83              GOTO      FIN
+0072 C                   SETON                                        2022
+0073 C                   SETOFF                                       1230
+0074 C                   GOTO      FIN
+0075 C     R20           TAG
+0076 C  N20              GOTO      FIN
+0077 C   09              SETON                                        1230
+0078 C   09              SETOFF                                       2022
+0079 C   09              GOTO      FIN
+0080 C     TECLA         COMP      ' '                                    99
+0081 C  N99              GOTO      R90
+     C                   MOVEL     EMP1          DEPEMP
+0117 C                   MOVEL     DEL1          DEPDEL
+0117 C                   Z-ADD     Z15           DEPCLA
+     C                   MOVEL     DESCRI        DEPNOM
+     C   84              WRITE     AA2TDPT0
+     C  N84              UPDATE    AA2TDPT0
+0083 C                   GOTO      R90
+0084 C     FIN           TAG
+     C                   GOTO      R1
+     C     FINAL         TAG
+**
+ES UNA CREACION
+EL NOMBRE NO DEBE SER BLANCO

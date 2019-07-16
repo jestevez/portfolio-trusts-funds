@@ -1,0 +1,21 @@
+= Start GPSBS subsystem
+
+== First check if the subsystem is up
+ wrkactjob sbs(gpsbs)
+
+== Stopped with the following command
+ endsbs gpsbs *immed
+
+== Start with the following command
+ strsbs qgpl/gpsbs
+
+== Start the socket
+ call GPPGMWEB/STRWEBGP 
+
+== CO Environment
+ call GPPGMWEB/STRWEBGPT 
+
+== Configure the application server
+You must configure the Java Server IP can be done with a SQL statement:
+
+ UPDATE GPPGMWEB.GPSOCKCTL SET SOCIP2='172.18.18.135', SOCIP1='172.18.18.135';
