@@ -27,7 +27,7 @@
         <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.0.13</logback.version>
         <org.springframework-version>4.0.5.RELEASE</org.springframework-version>
-        <spring.security.version>3.2.4.RELEASE</spring.security.version>
+        <spring.security.version>5.4.0</spring.security.version>
         <org.aspectj-version>1.6.9</org.aspectj-version>
         <!-- versions testing -->
         <junit.version>4.12</junit.version>
